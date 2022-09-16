@@ -5,13 +5,9 @@
 #include <ctype.h> // isspace and friends
 
 int readP3File(FILE *filehandle, int currentChar, int outputFlag);
-
-// pixel type
-typedef struct pixel
-{
-    // might be unsigned int? uint8 or something idk
-    int R, G, B;
-} pixel;
+int readP6File(FILE *filehandle, int currentChar, int outputFlag);
+int writeP3File();
+int writeP6File();
 
 // USAGE
 
@@ -26,6 +22,7 @@ typedef struct pixel
 // ADD HELP FUNCTION WITH A USAGE STRING (maybe not needed)
 // ADD SUPPORT FOR COMMENTS IN INPUT FILE
 // fix p3 fscanf or test against other values
+// check if at end of find once we read in all the values for the while loops
 
 // This section reads in files
 // P3
@@ -109,7 +106,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
     }
 
     // create array in memory to store data
-    pixel p3data[sizeof(pixel) * row * col];
+    unsigned int p3data[row*col][3];
 
     // go back at spot
     fseek(filehandle, -1L, SEEK_CUR);
@@ -118,30 +115,34 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
     int index = 0;
 
     // read in values
-    while(!feof(filehandle) && (index) < (row*col))
+    while(index < row*col)
     {
-        // scan in data MAYBE FIX FOR COMMENTS
-        int scan_count = fscanf(filehandle, "%d %d %d", &p3data[index].R, &p3data[index].G, &p3data[index].B);
+        // scan in first number
+        fscanf(filehandle, "%d", &p3data[index][0]);
 
-        printf("index: %d\n", index);
-        printf("%d\n", p3data[index].R);
-        printf("%d\n", p3data[index].G);
-        printf("%d\n\n", p3data[index].B);
+        // scan in next number
+        fscanf(filehandle, "%d", &p3data[index][1]);
+
+        // scan in next number
+        fscanf(filehandle, "%d", &p3data[index][2]);
 
         index+=1;
-
-        // ADD SUPPORT FOR COMMENTS AT END OF LINES??
     }
 
-
+    // print read message
     printf("P3 Read Complete\n");
+
     // now write to file
     if (outputFlag == 0)
     {
+        // now write
+        writeP3File();
     }
     // this is an else if because error has been handled in main
     else
     {
+        // write now
+        writeP6File();
     }
 
     return 0;
@@ -165,7 +166,6 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag)
     // parse until row and column count reached
     while(doneFlag == 0)
     {   
-        
 
         // if the character is a space or newline, parse one
         if (isspace(currentChar) != 0)
@@ -215,86 +215,50 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag)
             // scan int into maxcolor var
             fscanf(filehandle, "%d", &maxColor);
 
+            // all done after we get the color. Now we can parse the data
             doneFlag = 1;
         }
-        // // get to next int to begin storing data (maxcolor is negative 1 because maybe it can be 0?)
-        // // DOESNT RUN
-        // else if ((isdigit(currentChar)) != 0 && maxColor > -1)
-        // {
-        //     // done looping, all data parsed from header
-        //     doneFlag = 1;
-
-        // }
-        // else
-        // {
-        //     doneFlag = 1;
-
-            
-
-        //     //return 6;
-        // }
     }
 
-    //ended after maxcolor was retrieved, currentchar is 2
-
-    // maybe not needed
+    // move ahead one to parse data now
     fseek(filehandle, 1, SEEK_CUR);
-
-
-
-
-
-        typedef struct pixelTwo
-    {
-    // might be unsigned int? uint8 or something idk
-    unsigned char R, G, B;
-    } pixelTwo;
-
-
-
-
-
-
-
-
-
-    // create array in memory to store data
-    pixelTwo p6data[sizeof(pixel) * row * col];
-
 
     // Loop until end of file, filling out array with data
     int index = 0;
 
+    // create array of data to store pixels in. (three contiguous values make up a pixel in the array)
+    unsigned char p6data[row*col][3];
 
-
-
-    unsigned char r = 0;
-    unsigned char g = 0;
-    unsigned char b = 0;
-
-    unsigned char currentPixel[row*col*3];
-
+    // loop through data to fill array
     while (index < row*col)
     {
-    fread(&currentPixel[index], 3, 1, filehandle);
-    
-    
-    index += 1;
+        // read in p6 data
+        fread(&p6data[index], 3, 1, filehandle);
+        
+        // printf("%d ", p6data[index][0]);
+        // printf("%d ", p6data[index][1]);
+        // printf("%d\n", p6data[index][2]);
+        
+        // increment index
+        index += 1;
+
     }
 
-    index -= 1;
-    printf("%d %d %d\n", currentPixel[index], currentPixel[index+1], currentPixel[index+2]);
-
     
-
+    // print read message
     printf("P6 Read Complete\n");
+
     // now write to file
     if (outputFlag == 0)
     {
+        // write data now
+        writeP3File();
     }
     // this is an else if because error has been handled in main
     else
     {
+        // write data now
+        writeP6File();
     }
 
     return 0;
@@ -319,6 +283,7 @@ int writeP6File()
     printf("P6 Write Complete\n");
     return 0;
 }
+
 
 
 // main function
