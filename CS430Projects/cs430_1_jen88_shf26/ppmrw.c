@@ -20,6 +20,7 @@ int writeP6File();
 // TODO: HANDLE ERROR CODES FROM INPUT FILES
 // ADD SUPPORT FOR COMMENTS IN INPUT FILE (p3 data)
 // check if at end of find once we read in all the values for the while loops
+// check against max colo
 
 // This section reads in files
 // P3
@@ -78,7 +79,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
             }
         }
         // otherwise we are getting the color max value
-        else if ((isdigit(currentChar)) && maxColor == -1)
+        else if ((isdigit(currentChar)) != 0 && maxColor == -1)
         {
             // go back one so we can capture whole int
             fseek(filehandle, -1L, SEEK_CUR);
@@ -96,7 +97,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
         }
         else
         {
-            printf("Error: Unknown character obstructring input file\n");
+            printf("Error: Unknown character obstructing input file\n");
 
             return 6;
         }
@@ -111,28 +112,120 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
     // Loop until end of file, filling out array with data
     int index = 0;
 
+    // variable creation before loop
+    char charBuffer = ' ';
+    int comments = 0;
+    unsigned int temp;
+
     // read in values
-    while(index < row*col)
+    while(index < row*col && !feof(filehandle))
     {
+        if ( index >= row*col )
+        {
+            printf("Error: Corrupted file inputted\n");
+
+            return 11;
+        }
+        // check for comments
+        comments = fscanf(filehandle, "%c", &charBuffer);
+        
+        if ( charBuffer == '#' )
+        {
+            while(charBuffer != '\n')
+            {
+                charBuffer = fgetc(filehandle);
+            }
+            charBuffer = fgetc(filehandle);
+            
+        }
+        // move back one, even if comment found to ensure in correct spot for next numbers
+        fseek(filehandle, -1L, SEEK_CUR);
+
         // scan in first number
         fscanf(filehandle, "%d", &p3data[index][0]);
+
+        if (p3data[index][0] < 0 || p3data[index][0] > 255)
+        {
+            printf("Error: pixel values out of range\n");
+            return 10;
+        }
+
         printf("%d ", p3data[index][0]);
+
+        comments = fscanf(filehandle, "%c", &charBuffer);
         
-        // check for comments
+        if ( charBuffer == '#' )
+        {
+            //printf("HERE:%c ", charBuffer);
+            while(charBuffer != '\n')
+            {
+                printf("%c!", charBuffer);
+                charBuffer = fgetc(filehandle);
+            }
+            charBuffer = fgetc(filehandle);
+            
+        }
+        // move back one, even if comment found to ensure in correct spot for next numbers
+        fseek(filehandle, -1L, SEEK_CUR);
+
 
         // scan in next number
         fscanf(filehandle, "%d", &p3data[index][1]);
+        if (p3data[index][1] < 0 || p3data[index][1] > 255)
+        {
+            printf("Error: pixel values out of range\n");
+            return 10;
+        }
+
         printf("%d ", p3data[index][1]);
 
-        // check for comments
+        comments = fscanf(filehandle, "%c", &charBuffer);
+
+        if ( charBuffer == '#' )
+        {
+            //printf("HERE:%c ", charBuffer);
+            while(charBuffer != '\n')
+            {
+                
+                charBuffer = fgetc(filehandle);
+            }
+            charBuffer = fgetc(filehandle);
+        }
+        // move back one, even if comment found to ensure in correct spot for next numbers
+        fseek(filehandle, -1L, SEEK_CUR);
+
 
         // scan in next number
         fscanf(filehandle, "%d", &p3data[index][2]);
-        printf("%d \n", p3data[index][2]);
+        if (p3data[index][2] < 0 || p3data[index][2] > 255)
+        {
+            printf("Error: pixel values out of range\n");
+            return 10;
+        }
+        printf("%d \n\n", p3data[index][2]);
 
-        // check for comments
+        comments = fscanf(filehandle, "%c", &charBuffer);
+        if ( charBuffer == '#' )
+        {
+            
+            while(charBuffer != '\n')
+            {
+                
+                charBuffer = fgetc(filehandle);
+            }
+            charBuffer = fgetc(filehandle);
+
+        }
+        // move back one, even if comment found to ensure in correct spot for next numbers
 
         index+=1;
+    }
+
+    // if not enough data or too much
+    if (index != row*col)
+    {
+        printf("Error: Corrupted File Inputted");
+        return 20;
     }
 
     // print read message
