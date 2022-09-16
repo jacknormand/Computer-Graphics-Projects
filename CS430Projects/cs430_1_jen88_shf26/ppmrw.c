@@ -18,9 +18,6 @@ int writeP6File();
 // ppmrw 6 input.ppm output.ppm
 
 // TODO: HANDLE ERROR CODES FROM INPUT FILES
-// ADD SUPPORT FOR COMMENTS IN INPUT FILE (p3 data)
-// check if at end of find once we read in all the values for the while loops
-// check against max colo
 
 // This section reads in files
 // P3
@@ -405,6 +402,9 @@ int main(int argc, char *argv[])
     // character int for reading file
     int currentChar;
 
+    // return code
+    int returnCode = 0;
+
     // get output type
     if (argv[1][0] == '6')
     {
@@ -453,13 +453,14 @@ int main(int argc, char *argv[])
         if(currentChar == '3')
         {
             // read in p3 file
-            readP3File(filehandle, currentChar, outputFlag);
+            returnCode = readP3File(filehandle, currentChar, outputFlag);
+
         }
         // otherwise its gotta be 6
         else if(currentChar == '6')
         {
             // read in p6 file
-            readP6File(filehandle, currentChar, outputFlag);
+            returnCode = readP6File(filehandle, currentChar, outputFlag);
         }
         else
         {
@@ -480,7 +481,7 @@ int main(int argc, char *argv[])
     }
     
     fclose(filehandle);
-    return 0;
+    return returnCode;
 }
 
 
