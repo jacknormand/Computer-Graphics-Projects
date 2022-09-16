@@ -154,7 +154,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
             return 10;
         }
 
-        printf("%d ", p3data[index][0]);
+        //printf("%d ", p3data[index][0]);
 
         comments = fscanf(filehandle, "%c", &charBuffer);
         
@@ -163,7 +163,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
             //printf("HERE:%c ", charBuffer);
             while(charBuffer != '\n')
             {
-                printf("%c!", charBuffer);
+                //printf("%c!", charBuffer);
                 charBuffer = fgetc(filehandle);
             }
             charBuffer = fgetc(filehandle);
@@ -181,13 +181,12 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
             return 10;
         }
 
-        printf("%d ", p3data[index][1]);
+        //printf("%d ", p3data[index][1]);
 
         comments = fscanf(filehandle, "%c", &charBuffer);
 
         if ( charBuffer == '#' )
         {
-            //printf("HERE:%c ", charBuffer);
             while(charBuffer != '\n')
             {
                 
@@ -206,7 +205,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
             printf("Error: pixel values out of range\n");
             return 10;
         }
-        printf("%d \n\n", p3data[index][2]);
+        //printf("%d \n\n", p3data[index][2]);
 
         comments = fscanf(filehandle, "%c", &charBuffer);
         if ( charBuffer == '#' )
