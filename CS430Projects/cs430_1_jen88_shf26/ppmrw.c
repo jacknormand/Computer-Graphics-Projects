@@ -17,11 +17,8 @@ int writeP6File();
 // TO CONVERT TO P6 from whatever
 // ppmrw 6 input.ppm output.ppm
 
-
 // TODO: HANDLE ERROR CODES FROM INPUT FILES
-// ADD HELP FUNCTION WITH A USAGE STRING (maybe not needed)
-// ADD SUPPORT FOR COMMENTS IN INPUT FILE
-// fix p3 fscanf or test against other values
+// ADD SUPPORT FOR COMMENTS IN INPUT FILE (p3 data)
 // check if at end of find once we read in all the values for the while loops
 
 // This section reads in files
@@ -119,12 +116,21 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
     {
         // scan in first number
         fscanf(filehandle, "%d", &p3data[index][0]);
+        printf("%d ", p3data[index][0]);
+        
+        // check for comments
 
         // scan in next number
         fscanf(filehandle, "%d", &p3data[index][1]);
+        printf("%d ", p3data[index][1]);
+
+        // check for comments
 
         // scan in next number
         fscanf(filehandle, "%d", &p3data[index][2]);
+        printf("%d \n", p3data[index][2]);
+
+        // check for comments
 
         index+=1;
     }
