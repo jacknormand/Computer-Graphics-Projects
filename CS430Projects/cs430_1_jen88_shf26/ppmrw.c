@@ -17,7 +17,14 @@ int writeP6File();
 // TO CONVERT TO P6 from whatever
 // ppmrw 6 input.ppm output.ppm
 
-// TODO: HANDLE ERROR CODES FROM INPUT FILES
+// TODO: 
+// create the write functions should be easy
+// just go to end of read functions and look at how theyre called
+// gonna want to use data array, col, maxcolor, and outputflag as parameters 
+// readp3 stores in a ungsigned int array, p6 stores in a unsigned char array
+// i think theyre like bascially the same thing. they are stored with the size of pixels in array
+// and are a 2d array where the second index has 3 values (r,g,b)
+
 
 // This section reads in files
 // P3
@@ -348,6 +355,7 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag)
     if (outputFlag == 0)
     {
         // write data now
+        // 
         writeP3File();
     }
     // this is an else if because error has been handled in main
