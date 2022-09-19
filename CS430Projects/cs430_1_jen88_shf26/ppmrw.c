@@ -4,10 +4,12 @@
 #include <stdint.h> // standard integer types
 #include <ctype.h> // isspace and friends
 
-int readP3File(FILE *filehandle, int currentChar, int outputFlag);
-int readP6File(FILE *filehandle, int currentChar, int outputFlag);
-int writeP3File();
-int writeP6File();
+int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName);
+int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName);
+int writeP3ToP3File(int row, int col, unsigned int p3data[row*col][3], int maxColor, char* outputFileName);
+int writeP6ToP6File(int row, int col, unsigned char p6data[row*col][3], int maxColor, char* outputFileName);
+int writeP6ToP3File(int row, int col, unsigned char p6data[row*col][3], int maxColor, char* outputFileName);
+int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxColor, char* outputFileName);
 
 // USAGE
 
@@ -28,7 +30,7 @@ int writeP6File();
 
 // This section reads in files
 // P3
-int readP3File(FILE *filehandle, int currentChar, int outputFlag)
+int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName)
 {
     // variable init
     int doneFlag = 0;
@@ -238,13 +240,13 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
     if (outputFlag == 0)
     {
         // now write
-        writeP3File();
+        writeP3ToP3File(row, col, p3data, maxColor, outputFileName);
     }
     // this is an else if because error has been handled in main
     else
     {
         // write now
-        writeP6File();
+        writeP3ToP6File(row, col, p3data, maxColor, outputFileName);
     }
 
     return 0;
@@ -253,7 +255,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag)
 
 // P6
 // PPM USES 24 BITS PER PIXEL so uint24 i think
-int readP6File(FILE *filehandle, int currentChar, int outputFlag)
+int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName)
 {
     // variable init
     int doneFlag = 0;
@@ -335,18 +337,17 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag)
     while (index < row*col)
     {
         // read in p6 data
-        fread(&p6data[index], 3, 1, filehandle);
+        fread(&p6data[index], 1, 3, filehandle);
         
-        // printf("%d ", p6data[index][0]);
-        // printf("%d ", p6data[index][1]);
-        // printf("%d\n", p6data[index][2]);
+        //printf("%d ", p6data[index][0]);
+        //printf("%d ", p6data[index][1]);
+        //printf("%d\n", p6data[index][2]);
         
         // increment index
         index += 1;
 
     }
 
-    
     // print read message
     printf("P6 Read Complete\n");
 
@@ -355,33 +356,155 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag)
     {
         // write data now
         // 
-        writeP3File();
+        writeP6ToP3File(row, col, p6data, maxColor, outputFileName);
     }
     // this is an else if because error has been handled in main
     else
     {
         // write data now
-        writeP6File();
+        writeP6ToP6File(row, col, p6data, maxColor, outputFileName);
     }
 
     return 0;
 }
 
 // This section writes to files
-
 // P3 might need parameter to be a pointer idk
-int writeP3File()
+int writeP3ToP3File(int row, int col, unsigned int p3data[row*col][3], int maxColor, char* outputFileName)
 {
-    // write data
+    // create and open the output file
+    FILE* outputFile;
+    outputFile = fopen(outputFileName, "w");
+
+    // write the file type, the rows and columns, and maxColor
+    fprintf(outputFile, "P3\n");
+    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d\n", maxColor);
+
+    // initialize loop variables
+    int pixelIndex;
+    int pixelDataIndex;
+
+    // loop until every pixel is accessed
+    for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
+    {
+        // check column width for newline spacing
+        if (pixelIndex % col == 0 && pixelIndex != 0)
+        {
+            fprintf(outputFile, "\n");
+        }
+        // loop and print out each pixel's rgb
+        for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
+        {
+            fprintf(outputFile, "%4d", p3data[pixelIndex][pixelDataIndex]);
+        }
+    }
+
+    fclose(outputFile);
+
+    printf("P3 Write Complete\n");
+    return 0;
+}
+
+int writeP6ToP3File(int row, int col, unsigned char p6data[row*col][3], int maxColor, char* outputFileName)
+{
+    // create and open the output file
+    FILE* outputFile;
+    outputFile = fopen(outputFileName, "w");
+
+    // write the file type, the rows and columns, and maxColor
+    fprintf(outputFile, "P3\n");
+    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d\n", maxColor);
+
+    // initialize loop variables
+    int pixelIndex, pixelDataIndex;
+
+    // loop until every pixel is accessed
+    for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
+    {
+        // check column width for newline spacing
+        if (pixelIndex % 4 == 0 && pixelIndex != 0)
+        {
+            fprintf(outputFile, "\n");
+        }
+        // loop and print out each pixel's rgb
+        for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
+        {
+            fprintf(outputFile, "%4d", p6data[pixelIndex][pixelDataIndex]);
+        }
+    }
+
+    fclose(outputFile);
 
     printf("P3 Write Complete\n");
     return 0;
 }
 
 // P6
-int writeP6File()
+int writeP6ToP6File(int row, int col, unsigned char p6data[row*col][3], int maxColor, char* outputFileName)
 {
-    // write data
+    // create and open the output file
+    FILE* outputFile;
+    outputFile = fopen(outputFileName, "w");
+
+    // write the file type, the rows and columns, and maxColor
+    fprintf(outputFile, "P6\n");
+    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d\n", maxColor);
+
+    // initialize loop variables
+    int pixelIndex, pixelDataIndex;
+
+    // loop until every pixel is accessed
+    for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
+    {
+        // check column width for newline spacing
+        if (pixelIndex % 4 == 0 && pixelIndex != 0)
+        {
+            fprintf(outputFile, "\n");
+        }
+        // loop and print out each pixel's rgb
+        for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
+        {
+            fprintf(outputFile, "%c", p6data[pixelIndex][pixelDataIndex]);
+        }
+    }
+    fclose(outputFile);
+
+    printf("P6 Write Complete\n");
+    return 0;
+}
+
+int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxColor, char* outputFileName)
+{
+    // create and open the output file
+    FILE* outputFile;
+    outputFile = fopen(outputFileName, "w");
+
+    // write the file type, the rows and columns, and maxColor
+    fprintf(outputFile, "P6\n");
+    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d\n", maxColor);
+
+    // initialize loop variables
+    int pixelIndex, pixelDataIndex;
+
+    // loop until every pixel is accessed
+    for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
+    {
+        // check column width for newline spacing
+        if (pixelIndex % 4 == 0 && pixelIndex != 0)
+        {
+            fprintf(outputFile, "\n");
+        }
+        // loop and print out each pixel's rgb
+        for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
+        {
+            fprintf(outputFile, "%c", (char)p6data[pixelIndex][pixelDataIndex]);
+        }
+    }
+    fclose(outputFile);
 
     printf("P6 Write Complete\n");
     return 0;
@@ -437,6 +560,9 @@ int main(int argc, char *argv[])
     // open file
     FILE *filehandle = fopen(argv[2], "r");
 
+    // TODO: Error handling for output file name
+    char* outputFileName = argv[3];
+
     // error handling if filename is incorrect
     if (!filehandle)
     {
@@ -460,14 +586,14 @@ int main(int argc, char *argv[])
         if(currentChar == '3')
         {
             // read in p3 file
-            returnCode = readP3File(filehandle, currentChar, outputFlag);
+            returnCode = readP3File(filehandle, currentChar, outputFlag, outputFileName);
 
         }
         // otherwise its gotta be 6
         else if(currentChar == '6')
         {
             // read in p6 file
-            returnCode = readP6File(filehandle, currentChar, outputFlag);
+            returnCode = readP6File(filehandle, currentChar, outputFlag, outputFileName);
         }
         else
         {
