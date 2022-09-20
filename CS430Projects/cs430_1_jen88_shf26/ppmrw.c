@@ -254,7 +254,6 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
 
 
 // P6
-// PPM USES 24 BITS PER PIXEL so uint24 i think
 int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName)
 {
     // variable init
@@ -339,9 +338,10 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
         // read in p6 data
         fread(&p6data[index], 1, 3, filehandle);
         
-        //printf("%d ", p6data[index][0]);
-        //printf("%d ", p6data[index][1]);
-        //printf("%d\n", p6data[index][2]);
+        // uncomment to view
+        // printf("%d ", p6data[index][0]);
+        // printf("%d ", p6data[index][1]);
+        // printf("%d\n", p6data[index][2]);
         
         // increment index
         index += 1;
@@ -459,11 +459,6 @@ int writeP6ToP6File(int row, int col, unsigned char p6data[row*col][3], int maxC
     // loop until every pixel is accessed
     for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
     {
-        // check column width for newline spacing
-        if (pixelIndex % 4 == 0 && pixelIndex != 0)
-        {
-            fprintf(outputFile, "\n");
-        }
         // loop and print out each pixel's rgb
         for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
         {
@@ -493,11 +488,6 @@ int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxCo
     // loop until every pixel is accessed
     for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
     {
-        // check column width for newline spacing
-        if (pixelIndex % 4 == 0 && pixelIndex != 0)
-        {
-            fprintf(outputFile, "\n");
-        }
         // loop and print out each pixel's rgb
         for (pixelDataIndex = 0; pixelDataIndex < 3; pixelDataIndex++)
         {
