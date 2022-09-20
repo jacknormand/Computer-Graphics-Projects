@@ -20,7 +20,7 @@ int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxCo
 // ppmrw 6 input.ppm output.ppm
 
 // TODO: Fix error codes and add stderr to errors
-// main function error codes
+// error handling for readp6 errors?
 
 // This section reads in files
 // P3
@@ -97,7 +97,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
         }
         else
         {
-            printf("Error: Unknown character obstructing input file\n");
+            fprintf( stderr, "Error: Unknown character obstructing input file\n");
 
             return 6;
         }
@@ -122,7 +122,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
     {
         if ( index >= row*col )
         {
-            printf("Error: Corrupted file inputted\n");
+            fprintf( stderr, "Error: Corrupted file inputted\n");
 
             return 11;
         }
@@ -146,7 +146,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
 
         if (p3data[index][0] < 0 || p3data[index][0] > 255)
         {
-            printf("Error: pixel values out of range\n");
+            fprintf( stderr, "Error: pixel values out of range\n");
             return 10;
         }
 
@@ -173,7 +173,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
         fscanf(filehandle, "%d", &p3data[index][1]);
         if (p3data[index][1] < 0 || p3data[index][1] > 255)
         {
-            printf("Error: pixel values out of range\n");
+            fprintf( stderr, "Error: pixel values out of range\n");
             return 10;
         }
 
@@ -198,7 +198,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
         fscanf(filehandle, "%d", &p3data[index][2]);
         if (p3data[index][2] < 0 || p3data[index][2] > 255)
         {
-            printf("Error: pixel values out of range\n");
+            fprintf( stderr, "Error: pixel values out of range\n");
             return 10;
         }
         //printf("%d \n\n", p3data[index][2]);
@@ -223,7 +223,7 @@ int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
     // if not enough data or too much
     if (index != row*col)
     {
-        printf("Error: Corrupted File Inputted");
+        fprintf( stderr, "Error: Corrupted File Inputted");
         return 20;
     }
 
