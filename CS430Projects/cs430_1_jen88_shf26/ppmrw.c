@@ -19,14 +19,8 @@ int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxCo
 // TO CONVERT TO P6 from whatever
 // ppmrw 6 input.ppm output.ppm
 
-// TODO: 
-// create the write functions should be easy
-// just go to end of read functions and look at how theyre called
-// gonna want to use data array, col, maxcolor, and outputflag as parameters 
-// readp3 stores in a ungsigned int array, p6 stores in a unsigned char array
-// i think theyre like bascially the same thing. they are stored with the size of pixels in array
-// and are a 2d array where the second index has 3 values (r,g,b)
-
+// TODO: Fix error codes and add stderr to errors
+// main function error codes
 
 // This section reads in files
 // P3
@@ -338,7 +332,7 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
         // read in p6 data
         fread(&p6data[index], 1, 3, filehandle);
         
-        // uncomment to view
+        // //uncomment to view
         // printf("%d ", p6data[index][0]);
         // printf("%d ", p6data[index][1]);
         // printf("%d\n", p6data[index][2]);
@@ -378,7 +372,7 @@ int writeP3ToP3File(int row, int col, unsigned int p3data[row*col][3], int maxCo
 
     // write the file type, the rows and columns, and maxColor
     fprintf(outputFile, "P3\n");
-    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d %d\n", row, col);
     fprintf(outputFile, "%d\n", maxColor);
 
     // initialize loop variables
@@ -414,7 +408,7 @@ int writeP6ToP3File(int row, int col, unsigned char p6data[row*col][3], int maxC
 
     // write the file type, the rows and columns, and maxColor
     fprintf(outputFile, "P3\n");
-    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d %d\n", row, col);
     fprintf(outputFile, "%d\n", maxColor);
 
     // initialize loop variables
@@ -424,7 +418,7 @@ int writeP6ToP3File(int row, int col, unsigned char p6data[row*col][3], int maxC
     for (pixelIndex = 0; pixelIndex < row*col; pixelIndex++)
     {
         // check column width for newline spacing
-        if (pixelIndex % 4 == 0 && pixelIndex != 0)
+        if (pixelIndex % row == 0 && pixelIndex != 0)
         {
             fprintf(outputFile, "\n");
         }
@@ -450,7 +444,7 @@ int writeP6ToP6File(int row, int col, unsigned char p6data[row*col][3], int maxC
 
     // write the file type, the rows and columns, and maxColor
     fprintf(outputFile, "P6\n");
-    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d %d\n", row, col);
     fprintf(outputFile, "%d\n", maxColor);
 
     // initialize loop variables
@@ -479,7 +473,7 @@ int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxCo
 
     // write the file type, the rows and columns, and maxColor
     fprintf(outputFile, "P6\n");
-    fprintf(outputFile, "%d %d\n", col, row);
+    fprintf(outputFile, "%d %d\n", row, col);
     fprintf(outputFile, "%d\n", maxColor);
 
     // initialize loop variables
