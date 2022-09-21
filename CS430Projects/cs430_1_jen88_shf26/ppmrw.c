@@ -19,9 +19,6 @@ int writeP3ToP6File(int row, int col, unsigned int p6data[row*col][3], int maxCo
 // TO CONVERT TO P6 from whatever
 // ppmrw 6 input.ppm output.ppm
 
-// TODO: Fix error codes and add stderr to errors
-// error handling for readp6 errors?
-
 // This section reads in files
 // P3
 int readP3File(FILE *filehandle, int currentChar, int outputFlag, char* outputFileName)
@@ -315,6 +312,14 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
             // all done after we get the color. Now we can parse the data
             doneFlag = 1;
         }
+
+        else
+        {
+            fprintf( stderr, "Error: Unknown character obstructing input file\n");
+
+            return 6;
+        }
+        
     }
 
     // move ahead one to parse data now
@@ -327,15 +332,16 @@ int readP6File(FILE *filehandle, int currentChar, int outputFlag, char* outputFi
     unsigned char p6data[row*col][3];
 
     // loop through data to fill array
+    // && !feof(filehandle)
     while (index < row*col)
     {
         // read in p6 data
         fread(&p6data[index], 1, 3, filehandle);
         
-        // //uncomment to view
-        // printf("%d ", p6data[index][0]);
-        // printf("%d ", p6data[index][1]);
-        // printf("%d\n", p6data[index][2]);
+        //uncomment to view
+        printf("%d ", p6data[index][0]);
+        printf("%d ", p6data[index][1]);
+        printf("%d\n", p6data[index][2]);
         
         // increment index
         index += 1;
@@ -540,6 +546,7 @@ int main(int argc, char *argv[])
         // return error code
         return 4;
     }
+
 
     // open file
     FILE *filehandle = fopen(argv[2], "r");
