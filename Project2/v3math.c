@@ -1,6 +1,8 @@
 #include <math.h>
 #include "v3math.h"
 
+// TODO ROUND VALUES
+
 void v3_from_points(float *dst, float *a, float *b)
 {
     // distance from a to b is b - a

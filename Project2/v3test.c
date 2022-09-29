@@ -1,6 +1,6 @@
-// main goes here
 #include "v3math.h"
 #include <stdio.h>
+#include <assert.h>
 
 int main() {
     float a[] = {0.5, 0.25, 0.6};
@@ -9,5 +9,11 @@ int main() {
 
     v3_add(c, a, b);
 
-    printf("%f", c[1]);
+    printf("%f %f %f\n", c[0], c[1], c[2]);
+
+    assert(c[0] == 1.25);
+
+    assert(c[1] == .375);
+
+    assert(c[2] == 1.21);
 }
