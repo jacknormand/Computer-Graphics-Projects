@@ -1,4 +1,5 @@
 #include <math.h>
+#include "v3math.h"
 
 void v3_from_points(float *dst, float *a, float *b)
 {
