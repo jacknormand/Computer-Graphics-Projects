@@ -1,6 +1,8 @@
 #include "v3math.h"
 
-// TODO ROUND VALUES
+// TODO
+// add v3 equals (used to check if floats are equal because floats have minor differences)
+// and ensure dst and a pointers can be the same
 
 void v3_from_points(float *dst, float *a, float *b)
 {
