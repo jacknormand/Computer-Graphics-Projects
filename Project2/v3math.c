@@ -1,7 +1,6 @@
 #include "v3math.h"
 
 // TODO
-// add v3 equals (used to check if floats are equal because floats have minor differences)
 // and ensure dst and a pointers can be the same
 
 void v3_from_points(float *dst, float *a, float *b)
@@ -91,4 +90,19 @@ void v3_normalize(float *dst, float *a)
     dst[0] = a[0] / aLength;
     dst[1] = a[1] / aLength;
     dst[2] = a[2] / aLength;
+}
+
+bool v3_equals(float *a, float *b, float tolerance)
+{
+    // get difference of a and b (absolute val)
+    float diff = fabsf(a - b);
+
+    // return true if difference between values is too great
+    if (diff > tolerance)
+    {
+        return false;
+    }
+
+    // otherwise return false
+    return true;
 }

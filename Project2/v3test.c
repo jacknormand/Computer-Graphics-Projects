@@ -14,6 +14,4 @@ int main() {
 
     printf("%f %f %f\n", c[0], c[1], c[2]);
 
-    // BEGIN TESTS
-
 }
