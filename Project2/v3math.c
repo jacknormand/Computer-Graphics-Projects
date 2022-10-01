@@ -95,10 +95,14 @@ void v3_normalize(float *dst, float *a)
 bool v3_equals(float *a, float *b, float tolerance)
 {
     // get difference of a and b (absolute val)
-    float diff = fabsf(a - b);
+    float diff1 = fabsf(a[0] - b[0]);
+    float diff2 = fabsf(a[1] - b[1]);
+    float diff3 = fabsf(a[2] - b[2]);
 
     // return true if difference between values is too great
-    if (diff > tolerance)
+    if (diff1 > tolerance ||
+        diff2 > tolerance ||
+        diff3 > tolerance)
     {
         return false;
     }
