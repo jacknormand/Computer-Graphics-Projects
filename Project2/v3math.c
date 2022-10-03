@@ -2,6 +2,7 @@
 
 // TODO
 // and ensure dst and a pointers can be the same
+// errors in dot product? maybe just needs to be rounded idk 
 
 void v3_from_points(float *dst, float *a, float *b)
 {
@@ -27,7 +28,7 @@ void v3_subtract(float *dst, float *a, float *b)
 
 float v3_dot_product(float *a, float *b)
 {
-    float dotProduct = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    float dotProduct = (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
     return dotProduct;
 }
 
