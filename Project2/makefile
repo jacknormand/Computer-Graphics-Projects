@@ -1,5 +1,5 @@
 CC= gcc
-CFLAGS= -Wall
+CFLAGS= -Wall -lm
 RM= rm -f
 
 all: v3tester

@@ -7,23 +7,41 @@
 void v3_from_points(float *dst, float *a, float *b)
 {
     // distance from a to b is b - a
-    dst[0] = b[0] - a[0];
-    dst[1] = b[1] - a[1];
-    dst[2] = b[2] - a[2];
+    float tempVector[3];
+
+    tempVector[0] = b[0] - a[0];
+    tempVector[1] = b[1] - a[1];
+    tempVector[2] = b[2] - a[2];
+
+    dst[0] = tempVector[0];
+    dst[1] = tempVector[1];
+    dst[2] = tempVector[2];
 }
 
 void v3_add(float *dst, float *a, float *b)
 {
-    dst[0] = a[0] + b[0];
-    dst[1] = a[1] + b[1];
-    dst[2] = a[2] + b[2];
+    float tempVector[3];
+
+    tempVector[0] = b[0] + a[0];
+    tempVector[1] = b[1] + a[1];
+    tempVector[2] = b[2] + a[2];
+
+    dst[0] = tempVector[0];
+    dst[1] = tempVector[1];
+    dst[2] = tempVector[2];
 }
 
 void v3_subtract(float *dst, float *a, float *b)
 {
-    dst[0] = a[0] - b[0];
-    dst[1] = a[1] - b[1];
-    dst[2] = a[2] - b[2];
+    float tempVector[3];
+
+    tempVector[0] = a[0] - b[0];
+    tempVector[1] = a[1] - b[1];
+    tempVector[2] = a[2] - b[2];
+
+    dst[0] = tempVector[0];
+    dst[1] = tempVector[1];
+    dst[2] = tempVector[2];
 }
 
 float v3_dot_product(float *a, float *b)
@@ -34,9 +52,15 @@ float v3_dot_product(float *a, float *b)
 
 void v3_cross_product(float *dst, float *a, float *b)
 {
-    dst[0] = a[1] * b[2] - a[2] * b[1];
-    dst[1] = a[2] * b[0] - a[0] * b[2];
-    dst[2] = a[0] * b[1] - a[1] * b[0];
+    float tempVector[3];
+
+    tempVector[0] = a[1] * b[2] - a[2] * b[1];
+    tempVector[1] = a[2] * b[0] - a[0] * b[2];
+    tempVector[2] = a[0] * b[1] - a[1] * b[0];
+
+    dst[0] = tempVector[0];
+    dst[1] = tempVector[1];
+    dst[2] = tempVector[2];
 }
 
 void v3_scale(float *dst, float s)
@@ -77,7 +101,20 @@ float v3_angle_quick(float *a, float *b)
 
 void v3_reflect(float *dst, float *v, float *n)
 {
-    
+    float tempDest[3];
+    float scaledN[3];
+
+    scaledN[0] = n[0];
+    scaledN[1] = n[1];
+    scaledN[2] = n[2];
+
+    int vnDotProduct = 2 *v3_dot_product(v, n);
+    v3_scale(scaledN, vnDotProduct);
+    v3_subtract(tempDest, v, scaledN);
+
+    dst[0] = tempDest[0];
+    dst[1] = tempDest[1];
+    dst[2] = tempDest[2];
 }
 
 float v3_length(float *a)
@@ -87,10 +124,16 @@ float v3_length(float *a)
 
 void v3_normalize(float *dst, float *a)
 {
+    float tempVector[3];
     float aLength = v3_length(a);
-    dst[0] = a[0] / aLength;
-    dst[1] = a[1] / aLength;
-    dst[2] = a[2] / aLength;
+
+    tempVector[0] = a[0] / aLength;
+    tempVector[1] = a[1] / aLength;
+    tempVector[2] = a[2] / aLength;
+
+    dst[0] = tempVector[0];
+    dst[1] = tempVector[1];
+    dst[2] = tempVector[2];
 }
 
 bool v3_equals(float *a, float *b, float tolerance)
