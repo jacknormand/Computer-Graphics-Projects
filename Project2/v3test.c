@@ -7,7 +7,7 @@ int main();
 
 int main() {
     // tolerance for equality test
-    float tolerance = 1e-6;
+    float tolerance = 1e-6              ;
 
     // v3_add tests
 
@@ -139,7 +139,7 @@ int main() {
     // SECOND TEST OF DOT PRODUCT
     assert(v3_equals(answer, dest, tolerance));
 
-            printf("ans: %f %f %f\n", answer[0], answer[1], answer[2]);
+    printf("ans: %f %f %f\n", answer[0], answer[1], answer[2]);
     printf("result: %f %f %f\n", dest[0], dest[1], dest[2]);
 
 }
