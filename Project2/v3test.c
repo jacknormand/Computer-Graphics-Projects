@@ -7,7 +7,7 @@ int main();
 
 int main() {
     // tolerance for equality test
-    float tolerance = 1e-6              ;
+    float tolerance = 1e-3;
 
     // v3_add tests
 
@@ -135,11 +135,35 @@ int main() {
     answer[0] = 1203.5;  answer[1] = 0;  answer[2] = 0;
     dest[0] = v3_dot_product(vectorA, vectorB);
 
-
     // SECOND TEST OF DOT PRODUCT
     assert(v3_equals(answer, dest, tolerance));
+
+    // reset 
+    vectorA[0] = 100.4;  vectorA[1] = 200.5;  vectorA[2] = 300.6;
+    vectorB[0] = 1;  vectorB[1] = -5;  vectorB[2] = 7;
+    dest[0] = 0;  dest[1] = 0;  dest[2] = 0;
+    answer[0] = 1202.1;  answer[1] = 0;  answer[2] = 0;
+    dest[0] = v3_dot_product(vectorA, vectorB);
+
 
     printf("ans: %f %f %f\n", answer[0], answer[1], answer[2]);
     printf("result: %f %f %f\n", dest[0], dest[1], dest[2]);
 
+    // THIRD TEST OF DOT PRODUCT
+    assert(v3_equals(answer, dest, tolerance));
+
+
+    // CROSS PRODUCT
+
+    // reset 
+    vectorA[0] = 1;  vectorA[1] = 2;  vectorA[2] = 3;
+    vectorB[0] = 1;  vectorB[1] = 5;  vectorB[2] = 7;
+    dest[0] = 0;  dest[1] = 0;  dest[2] = 0;
+    answer[0] = 32;  answer[1] = 0;  answer[2] = 0;
+    dest[0] = v3_dot_product(vectorA, vectorB);
+
+    // FIRST TEST OF DOT PRODUCT
+    assert(v3_equals(answer, dest, tolerance));
+
+    return 0;
 }
