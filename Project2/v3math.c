@@ -75,8 +75,8 @@ float v3_angle(float *a, float *b)
     float dotProduct = v3_dot_product(a, b);
     float aMag = v3_length(a);
     float bMag = v3_length(b);
-
-    float angle = acos(dotProduct / aMag * bMag);
+    float equation = dotProduct / (aMag * bMag);
+    float angle = acos(equation);
     return angle;
 }
 
@@ -96,21 +96,25 @@ float v3_angle_quick(float *a, float *b)
     // find dot product with normalized vectors to get angle
     quickAngle = v3_dot_product(normalizedA, normalizedB);
 
+    // take acos?
+
     return quickAngle;
 }
 
 void v3_reflect(float *dst, float *v, float *n)
 {
-    float tempDest[3];
-    float scaledN[3];
+    float tempDest[] = {0, 0, 0};
+    float scaledN[] = {0, 0, 0};
 
+    // set to n
     scaledN[0] = n[0];
     scaledN[1] = n[1];
     scaledN[2] = n[2];
 
-    int vnDotProduct = 2 *v3_dot_product(v, n);
+    float vnDotProduct = v3_dot_product(v, n);
     v3_scale(scaledN, vnDotProduct);
-    v3_subtract(tempDest, v, scaledN);
+    v3_scale(scaledN, -2);
+    v3_add(tempDest, scaledN, v);
 
     dst[0] = tempDest[0];
     dst[1] = tempDest[1];
