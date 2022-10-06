@@ -546,7 +546,7 @@ int main() {
     // n 
     vectorB[0] = 0;  vectorB[1] = 1;  vectorB[2] = 1;
     dest[0] = 0;  dest[1] = 0;  dest[2] = 0;
-    answer[0] = 0;  answer[1] = -2;  answer[2] = -1;
+    answer[0] = 0;  answer[1] = -1;  answer[2] = 0;
     v3_reflect(dest, vectorA, vectorB);
 
     // First test of reflect
@@ -568,7 +568,7 @@ int main() {
     // n 
     vectorB[0] = 1;  vectorB[1] = 2;  vectorB[2] = 4;
     dest[0] = 0;  dest[1] = 0;  dest[2] = 0;
-    answer[0] = -142.6;  answer[1] = -276.4;  answer[2] = -549.8;
+    answer[0] = -8.123809;  answer[1] = -7.4476;  answer[2] = -11.8952;
     v3_reflect(dest, vectorA, vectorB);
 
     // second test of reflect

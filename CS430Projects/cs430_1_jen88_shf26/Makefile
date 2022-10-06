@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=Wall
+CFLAGS=-Wall
 RM=rm -f
 
 all: ppmrw

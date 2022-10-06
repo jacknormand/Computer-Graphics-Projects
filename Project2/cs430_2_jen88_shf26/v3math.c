@@ -105,13 +105,16 @@ void v3_reflect(float *dst, float *v, float *n)
 {
     float tempDest[] = {0, 0, 0};
     float scaledN[] = {0, 0, 0};
+    float normalizedN[] = {0, 0, 0};
 
+    // normalize n
+    v3_normalize(normalizedN, n);
     // set to n
-    scaledN[0] = n[0];
-    scaledN[1] = n[1];
-    scaledN[2] = n[2];
+    scaledN[0] = normalizedN[0];
+    scaledN[1] = normalizedN[1];
+    scaledN[2] = normalizedN[2];
 
-    float vnDotProduct = v3_dot_product(v, n);
+    float vnDotProduct = v3_dot_product(v, normalizedN);
     v3_scale(scaledN, vnDotProduct);
     v3_scale(scaledN, -2);
     v3_add(tempDest, scaledN, v);
@@ -131,6 +134,14 @@ void v3_normalize(float *dst, float *a)
     float tempVector[3];
     float aLength = v3_length(a);
 
+    if (aLength == 0)
+    {
+            dst[0] = 0;
+            dst[1] = 0;
+            dst[2] = 0;
+    }
+    else
+    {
     tempVector[0] = a[0] / aLength;
     tempVector[1] = a[1] / aLength;
     tempVector[2] = a[2] / aLength;
@@ -138,6 +149,8 @@ void v3_normalize(float *dst, float *a)
     dst[0] = tempVector[0];
     dst[1] = tempVector[1];
     dst[2] = tempVector[2];
+    }
+
 }
 
 bool v3_equals(float *a, float *b, float tolerance)
