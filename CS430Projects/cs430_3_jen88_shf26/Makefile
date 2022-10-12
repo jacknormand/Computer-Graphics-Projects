@@ -2,10 +2,10 @@ CC= gcc
 CFLAGS= -Wall -lm
 RM= rm -f
 
-all: raycaster
+all: raycast
 
-raycaster: ray.c
-	$(CC) $(CFLAGS) ray.c -o raycaster
+raycast: ray.c
+	$(CC) $(CFLAGS) ray.c -o raycast
 
 clean:
-	$(RM) raycaster *~
+	$(RM) raycast *~
