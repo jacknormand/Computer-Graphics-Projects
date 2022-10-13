@@ -31,13 +31,14 @@ typedef struct ray
 int main();
 void getColor(float* dst, ray inputRay);
 
+
 void getColor(float* dst, ray inputRay)
 {
     // nomralize direction
     float normalized[] = {0,0,0};
     // set colors
     float colorWhite[] = {1.0,1.0,1.0};
-    float colorRed[] = {.5,.7,1.0};
+    float colorRed[] = {1,0,0};
     float finalColor[] = {0,0,0};
     v3_normalize(normalized, inputRay.direction);
 
@@ -108,6 +109,7 @@ int main()
 
     // ray
     ray currentRay;
+    currentRay.origin = origin;
 
     // iterate over pixels in image, one a time,  shooting a ray 
     // through the center of the pixel out into the scene, 
@@ -125,13 +127,11 @@ int main()
             xVal = (widthIndex/(sceneWidth-1));
             yVal = (heightIndex/(sceneHeight-1));
 
-            // set ray origin (should be 0 by default but whatever set anyways)
-            currentRay.origin = origin;
-
             // do some quick maf
             v3_scale(horizontalTimesX, xVal);
             v3_scale(verticalTimesY, yVal);
-            v3_add(directionVar, horizontalTimesX, verticalTimesY);
+            v3_add(directionVar, directionVar, horizontalTimesX);
+            v3_add(directionVar, directionVar, verticalTimesY);
             v3_subtract(directionVar, directionVar, origin);
 
             // set ray direciton
@@ -143,9 +143,9 @@ int main()
             // printf("3:%f\n", currentRay.direction[2]);
 
             // get ray color 
-            getColor(pixelColor, currentRay);
+            getColor(pixelColor, currentRay); 
             
-            fprintf(outputFile, "%f %f %f ", pixelColor[0]*255, pixelColor[1]*255, pixelColor[2]*255);
+            fprintf(outputFile, "%f %f %f ", pixelColor[0]*255.9, pixelColor[1]*255.9, pixelColor[2]*255.9);
 
             // reset (this is ugly ik)
             directionVar[0] = lowerLeft[0];
