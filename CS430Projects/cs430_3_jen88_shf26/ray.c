@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include "v3math.h"
 int main();
 
 // TODO 
@@ -15,22 +16,54 @@ int main();
 typedef struct ray
 {
     // ray origin (A) (vector) (0,0,0 for camera)
+    float origin[3];
 
     // ray direction (B) (vector) (along z axis for camera)
+    float direction[3];
 
     // float num (t) (distance from origin?)
+    int distance;
 
     // p(t) = A + t*B (p is position) (points at stuff) (might be moved outta here idk)
-};
+    // all the points p lying on the ray satisfy the ray equation
+
+}ray;
+
+
 
 int main() {
 
-    // these values will be parsed in later
-    int sceneWidth = 200;
-    int sceneHeight = 100;
+    // these values read from arg in later
+    int sceneWidth = 400;
+    int sceneHeight = 400;
 
-    // background color
-    int bgColor[3] = {80, 200, 255};
+    int image[sceneWidth][sceneHeight];
+
+    // camera info also parsed from file
+    float cameraWidth = .5;
+    float cameraHeight = .5;
+    float focalLength = 1.0;
+    float origin[] = {0,0,0};
+    float horizontal[] = {cameraWidth, 0, 0};
+    float vertical[] = {0, cameraHeight, 0};
+
+    // origin- vector-horizontal/2 - vertical/2 - (0,0,focallength) = lowerleft corner
+    float horizontalHalved[] = {horizontal[0], horizontal[1], horizontal[2]};
+    float verticalHalved[] = {vertical[0], vertical[1], vertical[2]};
+    float FocalLengthZ[] = {0,0,focalLength};
+    float lowerLeft[] = {0,0,0};
+    // half
+    v3_scale(horizontalHalved, .5);
+    v3_scale(verticalHalved, .5);
+    // math subtract
+    v3_subtract(lowerLeft, origin, horizontalHalved);
+    v3_subtract(lowerLeft, lowerLeft, verticalHalved);
+    v3_subtract(lowerLeft, lowerLeft, FocalLengthZ);
+
+
+    // background color (need to divide by 255 for math, then multiply by 255 to get back to value to write)
+    // float pixelColor[] = {80,200,255};
+
     char* outputFileName = "hello.ppm";
     FILE* outputFile;
 
@@ -43,15 +76,26 @@ int main() {
     fprintf(outputFile, "%d\n", 255);
 
     // index vars
-    int widthIndex;
-    int heightIndex;
+    float widthIndex;
+    float heightIndex;
 
-    // DRAW BACKGROUND
-    for ( heightIndex = 0; heightIndex < sceneHeight; heightIndex++)
+    // iterate over pixels in image, one a time,  shooting a ray 
+    // through the center of the pixel out into the scene, 
+    // looking for intersections between each ray and the scene geometry.
+
+    // For loop vertical
+    for ( heightIndex = sceneHeight-1; heightIndex >= 0; heightIndex--)
     {
+        // For loop horizontal
         for (widthIndex = 0; widthIndex < sceneWidth; widthIndex++)
         {
-            fprintf(outputFile, "%d %d %d ", bgColor[0], bgColor[1], bgColor[2]);
+            pixelColor[0] = (widthIndex/(sceneWidth-1));
+            //printf("1:%f\n", pixelColor[0]);
+            pixelColor[1] = (heightIndex/(sceneHeight-1));
+            //printf("2:%f\n", pixelColor[1]);
+            pixelColor[2] = .25;
+            //printf("3:%f\n", pixelColor[2]);
+            fprintf(outputFile, "%f %f %f ", pixelColor[0]*255, pixelColor[1]*255, pixelColor[2]*255);
         }
         fprintf(outputFile, "\n");
     }

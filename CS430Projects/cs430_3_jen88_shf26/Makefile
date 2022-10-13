@@ -4,8 +4,8 @@ RM= rm -f
 
 all: raycast
 
-raycast: ray.c
-	$(CC) $(CFLAGS) ray.c -o raycast
+raycast: v3math.c ray.c
+	$(CC) $(CFLAGS) v3math.c ray.c -o raycast
 
 clean:
 	$(RM) raycast *~
