@@ -6,6 +6,7 @@
 // error suite
 // draw sphere
 // draw plane
+// set background color to black
 
 // DONE
 // none
@@ -34,12 +35,14 @@ void getColor(float* dst, ray inputRay);
 
 void getColor(float* dst, ray inputRay)
 {
+    // intersection
+
+
     // nomralize direction
     float normalized[] = {0,0,0};
     // set colors
     float colorWhite[] = {1.0,1.0,1.0};
-    float colorRed[] = {1,0,0};
-    float finalColor[] = {0,0,0};
+    float colorRed[] = {1,0,1};
     v3_normalize(normalized, inputRay.direction);
 
     // get it done
@@ -59,7 +62,7 @@ int main()
     int sceneWidth = 400;
     int sceneHeight = 400;
 
-    int image[sceneWidth][sceneHeight];
+    //int image[sceneWidth][sceneHeight];
 
     // camera info also parsed from file
     float cameraWidth = .5;
