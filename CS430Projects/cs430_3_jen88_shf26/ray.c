@@ -1,6 +1,11 @@
 #include<stdio.h>
 #include "v3math.h"
 
+#define NULLOBJ 100
+#define CAMERA 200
+#define SPHERE 300
+#define PLANE 400
+
 // TODO 
 // parse input.csv
 // error suite
@@ -31,10 +36,10 @@ typedef struct ray
 
 typedef struct object
 {
-    // 0 = not object
-    // 1 = camera
-    // 2 = sphere
-    // 3 = plane
+    // 100 = not object
+    // 200 = camera
+    // 300 = sphere
+    // 400 = plane
     int kind;
 
     union properties
@@ -61,25 +66,37 @@ typedef struct object
 
 int main();
 void getColor(float* dst, ray inputRay);
-bool intersectObj(object objectShotAt, ray inputRay);
+float intersectObj(object objectShotAt, ray inputRay);
 
 
-bool intersectObj(object objectShotAt, ray inputRay)
+float intersectObj(object objectShotAt, ray inputRay)
 {
-    // SPHERE: bt^2 * b + 2tb * (A-C) + (A-C) . (A-C) - r^2 = 0
-    // solve for t^2 roots
-    float originCenter[] = {0,0,0};
+    if (objectShotAt.kind == SPHERE)
+        {
+            // SPHERE: bt^2 * b + 2tb * (A-C) + (A-C) . (A-C) - r^2 = 0
+            // solve for t^2 roots
+            float originCenter[] = {0,0,0};
 
-    v3_subtract(originCenter, inputRay.origin, objectShotAt.properties.sphere.position);
-    float directionDot = v3_dot_product(inputRay.direction, inputRay.direction);
-    float twoTimesDot = 2.0 * v3_dot_product(originCenter, inputRay.direction);
-    float radiusSq = objectShotAt.properties.sphere.radius * objectShotAt.properties.sphere.radius;
-    float dotOCMinusRSquared = v3_dot_product(originCenter, originCenter) - radiusSq;
-    float result = (twoTimesDot * twoTimesDot) - (4 * directionDot * dotOCMinusRSquared);
+            // solves equation above
+            v3_subtract(originCenter, inputRay.origin, objectShotAt.properties.sphere.position);
+            float directionDot = v3_dot_product(inputRay.direction, inputRay.direction);
+            float twoTimesDot = 2.0 * v3_dot_product(originCenter, inputRay.direction);
+            float radiusSq = objectShotAt.properties.sphere.radius * objectShotAt.properties.sphere.radius;
+            float dotOCMinusRSquared = v3_dot_product(originCenter, originCenter) - radiusSq;
+            float result = (twoTimesDot * twoTimesDot) - (4 * directionDot * dotOCMinusRSquared);
+            
+            // hit if >0
+            if ( result > 0 )
+            {
+                return 1;
+            }
+            // other didnt hit
+            else
+            {
+                return -1;
+            }
+        }
 
-    // if result > 0, we hit sphere. if less than inside of sphere. 
-
-    return result > 0;
     
 
 }
@@ -88,17 +105,18 @@ void getColor(float* dst, ray inputRay)
 {
     // make object TEMp
     object redSphere;
-    float spherePos[] = {0,2,-5};
+    float spherePos[] = {0, 0,-15};
     float sphereCol[] = {1,0,0};
 
     redSphere.properties.sphere.position = spherePos;
     redSphere.properties.sphere.radius = 2;
     redSphere.properties.sphere.color = sphereCol;
+    redSphere.kind = SPHERE;
 
 
 
     // intersection
-    if(intersectObj(redSphere, inputRay))
+    if(intersectObj(redSphere, inputRay) > 0)
     {
         dst[0] = sphereCol[0];
         dst[1] = sphereCol[1];
@@ -106,43 +124,75 @@ void getColor(float* dst, ray inputRay)
         return;
     }
 
-    // nomralize direction
-    float normalized[] = {0,0,0};
-    // set colors
-    float colorWhite[] = {1.0,1.0,1.0};
-    float colorRed[] = {0.5,0.7,1};
-    v3_normalize(normalized, inputRay.direction);
+    dst[0] = 0;
+    dst[1] = 0;
+    dst[2] = 0;
 
-    // get it done
-    float lenT = .5 * (normalized[1] + 1.0);
-    float neglenT = 1 - lenT;
-    v3_scale(colorWhite, neglenT);
-    v3_scale(colorRed, lenT);
-    v3_add(dst, colorRed, colorWhite);
+    // // nomralize direction
+    // float normalized[] = {0,0,0};
+    // // set colors
+    // float colorWhite[] = {1.0,1.0,1.0};
+    // float colorRed[] = {0.5,0.7,1};
+    // v3_normalize(normalized, inputRay.direction);
+
+    // // get it done
+    // float lenT = .5 * (normalized[1] + 1.0);
+    // float neglenT = 1 - lenT;
+    // v3_scale(colorWhite, neglenT);
+    // v3_scale(colorRed, lenT);
+    // v3_add(dst, colorRed, colorWhite);
 
 }
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
-    // these values read from arg in later
-    int sceneWidth = 400;
-    // int sceneHeight = 400;
-    int sceneHeight = 400;
+    if (argc != 5)
+    {
+        //ERROR UNSUPPORTED FILE to stderr
+        fprintf( stderr, "Error: Unsupported Number of of Arguments\n");
 
-    //int image[sceneWidth][sceneHeight];
+        // input error
+        return 1;
+    }
+
+    // read in width height
+    int sceneWidth = atoi(argv[1]);
+    int sceneHeight = atoi(argv[2]);
+
+    //  @HENRY PARSE INFO IN HERE FROM FILE 
+    // dont need to set any values i can do that later just parse into the object list
+
+    // list of objects youll fill
+    object Obejcts[128];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // camera info also parsed from file
-    // float cameraWidth = .5;
-    // float cameraHeight = .5;
     float cameraWidth = .5;
     float cameraHeight = .5;
+    // focal length always 1, same with origin always 0,0,0
     float focalLength = 1.0;
     float origin[] = {0,0,0};
+    // horizontal and vertical floats to traverse view
     float horizontal[] = {cameraWidth, 0, 0};
     float vertical[] = {0, cameraHeight, 0};
 
+    //CALCULATIONS
     // origin- vector-horizontal/2 - vertical/2 - (0,0,focallength) = lowerleft corner
     float horizontalHalved[] = {horizontal[0], horizontal[1], horizontal[2]};
     float verticalHalved[] = {vertical[0], vertical[1], vertical[2]};
@@ -156,12 +206,7 @@ int main()
     v3_subtract(lowerLeft, lowerLeft, verticalHalved);
     v3_subtract(lowerLeft, lowerLeft, FocalLengthZ);
 
-
-    // background color (need to divide by 255 for math, then multiply by 255 to get back to value to write)
-    // this changes btw these numbers are a default blue
-    float pixelColor[] = {80,200,255};
-
-    char* outputFileName = "hello.ppm";
+    char* outputFileName = argv[4];
     FILE* outputFile;
 
     // open up
@@ -180,21 +225,20 @@ int main()
     float directionVar[] = {lowerLeft[0],lowerLeft[1],lowerLeft[2]};
     float horizontalTimesX[] = {horizontal[0],horizontal[1],horizontal[2]};
     float verticalTimesY[] = {vertical[0],vertical[1],vertical[2]};
+    // pixel that gets written out
+    float pixelColor[] = {0,0,0};
 
     // ray
     ray currentRay;
     currentRay.origin = origin;
 
-    // object
-
-
-    // iterate over pixels in image, one a time,  shooting a ray 
-    // through the center of the pixel out into the scene, 
-    // looking for intersections between each ray and the scene geometry.
     //printf("1:%f\n", pixelColor[0]);
     //printf("2:%f\n", pixelColor[1]);
     //printf("3:%f\n", pixelColor[2]);
 
+    // iterate over pixels in image, one a time,  shooting a ray 
+    // through the center of the pixel out into the scene, 
+    // looking for intersections between each ray and the scene geometry.
     // For loop vertical
     for ( heightIndex = sceneHeight-1; heightIndex >= 0; heightIndex--)
     {
@@ -214,11 +258,6 @@ int main()
             // set ray direciton
             currentRay.direction = directionVar;
 
-            //currentRay.direction = directionVar;
-            // printf("1:%f\n", currentRay.direction[0]);
-            // printf("2:%f\n", currentRay.direction[1]);
-            // printf("3:%f\n", currentRay.direction[2]);
-
             // get ray color 
             getColor(pixelColor, currentRay); 
             
@@ -234,7 +273,6 @@ int main()
             verticalTimesY[0] = vertical[0];
             verticalTimesY[1] = vertical[1];
             verticalTimesY[2] = vertical[2];
-            
         }
         fprintf(outputFile, "\n");
     }
