@@ -46,16 +46,16 @@ typedef struct object
     {
         struct sphere
         {
-            float* position;
+            float position[3];
             float radius;
-            float* color;
+            float color[3];
         }sphere;
 
         struct plane
         {
-            float* position;
-            float* normal;
-            float* color;
+            float position[3];
+            float normal[3];
+            float color[3];
         }plane;
         
     }properties;
@@ -63,84 +63,84 @@ typedef struct object
 }object;
 
 
-
 int main();
-void getColor(float* dst, ray inputRay);
-float intersectObj(object objectShotAt, ray inputRay);
+void getColor(float* dst, ray inputRay, object sceneObjects[]);
+float intersectObj(object* objectShotAt, ray inputRay);
 
 
-float intersectObj(object objectShotAt, ray inputRay)
+float intersectObj(object* objectShotAt, ray inputRay)
 {
-    if (objectShotAt.kind == SPHERE)
+    if (objectShotAt->kind == SPHERE)
         {
             // SPHERE: bt^2 * b + 2tb * (A-C) + (A-C) . (A-C) - r^2 = 0
             // solve for t^2 roots
             float originCenter[] = {0,0,0};
 
             // solves equation above
-            v3_subtract(originCenter, inputRay.origin, objectShotAt.properties.sphere.position);
+            v3_subtract(originCenter, inputRay.origin, objectShotAt->properties.sphere.position);
             float directionDot = v3_dot_product(inputRay.direction, inputRay.direction);
             float twoTimesDot = 2.0 * v3_dot_product(originCenter, inputRay.direction);
-            float radiusSq = objectShotAt.properties.sphere.radius * objectShotAt.properties.sphere.radius;
+            float radiusSq = objectShotAt->properties.sphere.radius * objectShotAt->properties.sphere.radius;
             float dotOCMinusRSquared = v3_dot_product(originCenter, originCenter) - radiusSq;
             float result = (twoTimesDot * twoTimesDot) - (4 * directionDot * dotOCMinusRSquared);
             
-            // hit if >0
-            if ( result > 0 )
-            {
-                return 1;
-            }
-            // other didnt hit
-            else
-            {
-                return -1;
-            }
+            return result;
         }
 
-    
+    return 0;
 
 }
 
-void getColor(float* dst, ray inputRay)
+void getColor(float* dst, ray inputRay, object sceneObjects[])
 {
-    // make object TEMp
-    object redSphere;
-    float spherePos[] = {0, 0,-15};
-    float sphereCol[] = {1,0,0};
+    // // intersection
+    // if(intersectObj(OBJECT, inputRay) > 0)
+    // {
+    //     dst[0] = sphereCol[0];
+    //     dst[1] = sphereCol[1];
+    //     dst[2] = sphereCol[2];
+    //     return;
+    // }
+    
+    float nearestTVal = 1e+9;
+    float newTVal = -1;
+    float pixelColor[] = {0,0,0};
+    object *currentObj;
 
-    redSphere.properties.sphere.position = spherePos;
-    redSphere.properties.sphere.radius = 2;
-    redSphere.properties.sphere.color = sphereCol;
-    redSphere.kind = SPHERE;
+    currentObj = &sceneObjects[1];
+    printf("%d", currentObj->kind);
 
-
-
-    // intersection
-    if(intersectObj(redSphere, inputRay) > 0)
+    // loop through objects
+    for (int objectIndex = 0; objectIndex < 128; objectIndex++)
     {
-        dst[0] = sphereCol[0];
-        dst[1] = sphereCol[1];
-        dst[2] = sphereCol[2];
-        return;
+        currentObj = &sceneObjects[objectIndex];
+        if (currentObj->kind == SPHERE)
+        {
+            // get new tVal from current obj
+            newTVal = intersectObj(currentObj, inputRay);
+
+            // maybe just greater than
+            if (newTVal >= 0 && newTVal < nearestTVal)
+            {
+                nearestTVal = newTVal;
+                pixelColor[0] = currentObj->properties.sphere.color[0];
+                pixelColor[1] = currentObj->properties.sphere.color[1];
+                pixelColor[2] = currentObj->properties.sphere.color[2];
+            }
+
+        }
+        else if (currentObj->kind == PLANE)
+        {
+        }
+        else
+        {
+            //printf("brrr planeOTHER\n");
+        }
     }
 
-    dst[0] = 0;
-    dst[1] = 0;
-    dst[2] = 0;
-
-    // // nomralize direction
-    // float normalized[] = {0,0,0};
-    // // set colors
-    // float colorWhite[] = {1.0,1.0,1.0};
-    // float colorRed[] = {0.5,0.7,1};
-    // v3_normalize(normalized, inputRay.direction);
-
-    // // get it done
-    // float lenT = .5 * (normalized[1] + 1.0);
-    // float neglenT = 1 - lenT;
-    // v3_scale(colorWhite, neglenT);
-    // v3_scale(colorRed, lenT);
-    // v3_add(dst, colorRed, colorWhite);
+    dst[0] = pixelColor[0];
+    dst[1] = pixelColor[1];
+    dst[2] = pixelColor[2];
 
 }
 
@@ -165,8 +165,45 @@ int main(int argc, char *argv[])
     // dont need to set any values i can do that later just parse into the object list
 
     // list of objects youll fill
-    object Obejcts[128];
+    object sceneObjects[128];
 
+    // EXAMPLE: FILLED THIS HOW IT SHOULD BE FILLED FROM INPUT (so i can test with it)
+    // camera doesnt have properties because it will be read in and width and height will be set instantly
+    object tempCamera;
+    tempCamera.kind = CAMERA;
+
+    object redSphere;
+    float colorRedTest[] = {1,0,0};
+    float positionoftestsphere[] = {0,0,-10};
+    float radiusTest = .5;
+    redSphere.kind = SPHERE;
+    redSphere.properties.sphere.color[0] = colorRedTest[0];
+    redSphere.properties.sphere.color[1] = colorRedTest[1];
+    redSphere.properties.sphere.color[2] = colorRedTest[2];
+    redSphere.properties.sphere.position[0] = positionoftestsphere[0];
+    redSphere.properties.sphere.position[1] = positionoftestsphere[1];
+    redSphere.properties.sphere.position[2] = positionoftestsphere[2];
+    redSphere.properties.sphere.radius = radiusTest;
+
+    object testPlane;
+    float colorBlueTest[] = {0,0,1};
+    float positionoftestplane[] = {0,0,0};
+    float normalTest[] = {0,1,0};
+    testPlane.kind = PLANE;
+    testPlane.properties.plane.color[0] = colorBlueTest[0];
+    testPlane.properties.plane.color[1] = colorBlueTest[1];
+    testPlane.properties.plane.color[2] = colorBlueTest[2];
+    testPlane.properties.plane.position[0] = positionoftestplane[0];
+    testPlane.properties.plane.position[1] = positionoftestplane[1];
+    testPlane.properties.plane.position[2] = positionoftestplane[2];
+    testPlane.properties.plane.normal[0] = normalTest[0];
+    testPlane.properties.plane.normal[1] = normalTest[1];
+    testPlane.properties.plane.normal[2] = normalTest[2];
+
+    // input read for test
+    sceneObjects[0] = tempCamera;
+    sceneObjects[1] = redSphere;
+    sceneObjects[2] = testPlane;
 
 
 
@@ -259,7 +296,7 @@ int main(int argc, char *argv[])
             currentRay.direction = directionVar;
 
             // get ray color 
-            getColor(pixelColor, currentRay); 
+            getColor(pixelColor, currentRay, sceneObjects); 
             
             fprintf(outputFile, "%f %f %f ", pixelColor[0]*255.9, pixelColor[1]*255.9, pixelColor[2]*255.9);
 
