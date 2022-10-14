@@ -29,20 +29,88 @@ typedef struct ray
 
 }ray;
 
+typedef struct object
+{
+    // 0 = not object
+    // 1 = camera
+    // 2 = sphere
+    // 3 = plane
+    int kind;
+
+    union properties
+    {
+        struct sphere
+        {
+            float* position;
+            float radius;
+            float* color;
+        }sphere;
+
+        struct plane
+        {
+            float* position;
+            float* normal;
+            float* color;
+        }plane;
+        
+    }properties;
+
+}object;
+
+
+
 int main();
 void getColor(float* dst, ray inputRay);
+bool intersectObj(object objectShotAt, ray inputRay);
 
+
+bool intersectObj(object objectShotAt, ray inputRay)
+{
+    // SPHERE: bt^2 * b + 2tb * (A-C) + (A-C) . (A-C) - r^2 = 0
+    // solve for t^2 roots
+    float originCenter[] = {0,0,0};
+
+    v3_subtract(originCenter, inputRay.origin, objectShotAt.properties.sphere.position);
+    float directionDot = v3_dot_product(inputRay.direction, inputRay.direction);
+    float twoTimesDot = 2.0 * v3_dot_product(originCenter, inputRay.direction);
+    float radiusSq = objectShotAt.properties.sphere.radius * objectShotAt.properties.sphere.radius;
+    float dotOCMinusRSquared = v3_dot_product(originCenter, originCenter) - radiusSq;
+    float result = (twoTimesDot * twoTimesDot) - (4 * directionDot * dotOCMinusRSquared);
+
+    // if result > 0, we hit sphere. if less than inside of sphere. 
+
+    return result > 0;
+    
+
+}
 
 void getColor(float* dst, ray inputRay)
 {
-    // intersection
+    // make object TEMp
+    object redSphere;
+    float spherePos[] = {0,2,-5};
+    float sphereCol[] = {1,0,0};
 
+    redSphere.properties.sphere.position = spherePos;
+    redSphere.properties.sphere.radius = 2;
+    redSphere.properties.sphere.color = sphereCol;
+
+
+
+    // intersection
+    if(intersectObj(redSphere, inputRay))
+    {
+        dst[0] = sphereCol[0];
+        dst[1] = sphereCol[1];
+        dst[2] = sphereCol[2];
+        return;
+    }
 
     // nomralize direction
     float normalized[] = {0,0,0};
     // set colors
     float colorWhite[] = {1.0,1.0,1.0};
-    float colorRed[] = {1,0,1};
+    float colorRed[] = {0.5,0.7,1};
     v3_normalize(normalized, inputRay.direction);
 
     // get it done
@@ -60,11 +128,14 @@ int main()
 {
     // these values read from arg in later
     int sceneWidth = 400;
+    // int sceneHeight = 400;
     int sceneHeight = 400;
 
     //int image[sceneWidth][sceneHeight];
 
     // camera info also parsed from file
+    // float cameraWidth = .5;
+    // float cameraHeight = .5;
     float cameraWidth = .5;
     float cameraHeight = .5;
     float focalLength = 1.0;
@@ -113,6 +184,9 @@ int main()
     // ray
     ray currentRay;
     currentRay.origin = origin;
+
+    // object
+
 
     // iterate over pixels in image, one a time,  shooting a ray 
     // through the center of the pixel out into the scene, 
