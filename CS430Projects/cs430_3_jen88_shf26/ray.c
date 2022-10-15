@@ -116,9 +116,14 @@ float intersectObj(object* objectShotAt, ray inputRay)
 
         float vZero = v3_dot_product(distanceFromPlane, objectShotAt->properties.plane.normal);
 
-        float result = vZero/Vd;
+        float resultONE = vZero/Vd;
 
-        return result;
+        if (resultONE < 0)
+        {
+            return -1.0;
+        }
+
+        return resultONE;
         
     }
 
@@ -134,13 +139,14 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
     float nearestTVal = 1e+9;
     float newTVal = -1;
     float pixelColor[] = {0,0,0};
-    object *currentObj;
+    object* currentObj;
 
     // loop through objects
     for (int objectIndex = 0; objectIndex < 128; objectIndex++)
     {
         // get object
         currentObj = &sceneObjects[objectIndex];
+
 
         if (currentObj->kind == SPHERE)
         {
@@ -156,14 +162,16 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[2] = currentObj->properties.sphere.color[2];
 
             }
+        }
 
         else if (currentObj->kind == PLANE)
         {
             newTVal = intersectObj(currentObj, inputRay);
 
             // intersects behind origin not of interest
-            if (newTVal >= 0)
+            if (newTVal >= 0 && newTVal < nearestTVal)
             {
+                nearestTVal = newTVal;
                 pixelColor[0] = currentObj->properties.plane.color[0];
                 pixelColor[1] = currentObj->properties.plane.color[1];
                 pixelColor[2] = currentObj->properties.plane.color[2];
@@ -172,7 +180,7 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
 
 
 
-        }
+        
 
 
     // otherwise doesnt fit plane or sphere, skip
@@ -228,7 +236,7 @@ int main(int argc, char *argv[])
 
     object testPlane;
     float colorGreenTest[] = {0,1,0};
-    float positionoftestplane[] = {0,0,0};
+    float positionoftestplane[] = {0,-1,0};
     float normalTest[] = {0,1,0};
     testPlane.kind = PLANE;
     testPlane.properties.plane.color[0] = colorGreenTest[0];
