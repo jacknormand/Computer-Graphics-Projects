@@ -70,10 +70,20 @@ float intersectObj(object* objectShotAt, ray inputRay)
 
         // solves equation above
         v3_subtract(originCenter, inputRay.origin, objectShotAt->properties.sphere.position);
+
+        // direction dot product with intputray direction
         float directionDot = v3_dot_product(inputRay.direction, inputRay.direction);
+
+        // times 2 by origincenter and direction 
         float twoTimesDot = 2.0 * v3_dot_product(originCenter, inputRay.direction);
+
+        // square radius 
         float radiusSq = objectShotAt->properties.sphere.radius * objectShotAt->properties.sphere.radius;
+
+        // subtract r^2
         float dotOCMinusRSquared = v3_dot_product(originCenter, originCenter) - radiusSq;
+
+        // set result 
         float result = (twoTimesDot * twoTimesDot) - (4 * directionDot * dotOCMinusRSquared);
         
         // if positive result, return 
@@ -107,6 +117,7 @@ float intersectObj(object* objectShotAt, ray inputRay)
             // no intersect
             return -1.0;
         }
+        // if >0, normal is pointing away. we assume one sided planes for now
         else if (Vd > 0)
         {
             return -1.0;
@@ -118,11 +129,13 @@ float intersectObj(object* objectShotAt, ray inputRay)
 
         float resultONE = vZero/Vd;
 
+        // if less than one, its intersecting behind camera so back out
         if (resultONE < 0)
         {
             return -1.0;
         }
 
+        // otherwise return ray intersection 
         return resultONE;
         
     }
