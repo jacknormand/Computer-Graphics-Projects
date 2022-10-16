@@ -273,13 +273,10 @@ int main(int argc, char *argv[])
             objIndex++;
         }
 
-
-
         else if (strcmp(word, "sphere") == 0)
         {
             object newObj;
             newObj.kind = SPHERE;
-            
 
             while(word)
             {
@@ -339,7 +336,70 @@ int main(int argc, char *argv[])
 
         else if (strcmp(word, "plane") == 0)
         {
+            object newObj;
+            newObj.kind = PLANE;
 
+            while(word)
+            {
+                // get next word
+                word = strtok(NULL, ": ");
+
+                // if word isnt null
+                if(word)
+                {
+                    if (strcmp(word, "color") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+                        // get Red
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.color[0] = recoveredNum;
+
+                        // get Blue
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.color[1] = recoveredNum;
+
+                        // get Green
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.plane.color[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "position") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+
+                        // get X
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.position[0] = recoveredNum;
+
+                        // get Y
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.position[1] = recoveredNum;
+
+                        // get Z
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.plane.position[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "normal") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+
+                        // get X
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.normal[0] = recoveredNum;
+
+                        // get Y
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.normal[1] = recoveredNum;
+
+                        // get Z
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.plane.normal[2] = recoveredNum;
+                    }
+                }
+
+            }
 
             // set to new object
             sceneObjects[objIndex] = newObj;
@@ -348,78 +408,11 @@ int main(int argc, char *argv[])
     }
 
     fclose(filehandle);
-
-
+    //done parsing
 
     // read in width height
     int sceneWidth = atoi(argv[1]);
     int sceneHeight = atoi(argv[2]);
-
-    // EXAMPLE: FILLED THIS HOW IT SHOULD BE FILLED FROM INPUT (so i can test with it)
-    // camera doesnt have properties because it will be read in and width and height will be set instantly
-    object tempCamera;
-    tempCamera.kind = CAMERA;
-
-    // object redSphere;
-    // float colorRedTest[] = {1,0,0};
-    // float positionoftestsphere[] = {0, 0, -5};
-    // float radiusTest = .5;
-    // redSphere.kind = SPHERE;
-    // redSphere.properties.sphere.color[0] = colorRedTest[0];
-    // redSphere.properties.sphere.color[1] = colorRedTest[1];
-    // redSphere.properties.sphere.color[2] = colorRedTest[2];
-    // redSphere.properties.sphere.position[0] = positionoftestsphere[0];
-    // redSphere.properties.sphere.position[1] = positionoftestsphere[1];
-    // redSphere.properties.sphere.position[2] = positionoftestsphere[2];
-    // redSphere.properties.sphere.radius = radiusTest;
-
-    // object testPlane;
-    // float colorGreenTest[] = {0,1,0};
-    // float positionoftestplane[] = {0,-1,0};
-    // float normalTest[] = {0,1,0};
-    // testPlane.kind = PLANE;
-    // testPlane.properties.plane.color[0] = colorGreenTest[0];
-    // testPlane.properties.plane.color[1] = colorGreenTest[1];
-    // testPlane.properties.plane.color[2] = colorGreenTest[2];
-    // testPlane.properties.plane.position[0] = positionoftestplane[0];
-    // testPlane.properties.plane.position[1] = positionoftestplane[1];
-    // testPlane.properties.plane.position[2] = positionoftestplane[2];
-    // testPlane.properties.plane.normal[0] = normalTest[0];
-    // testPlane.properties.plane.normal[1] = normalTest[1];
-    // testPlane.properties.plane.normal[2] = normalTest[2];
-
-
-    // object blueSphere;
-    // float colorBlueTest[] = {0,0,1};
-    // float positionoftestsphere2[] = {.5, 0, -5.5};
-    // blueSphere.kind = SPHERE;
-    // blueSphere.properties.sphere.color[0] = colorBlueTest[0];
-    // blueSphere.properties.sphere.color[1] = colorBlueTest[1];
-    // blueSphere.properties.sphere.color[2] = colorBlueTest[2];
-    // blueSphere.properties.sphere.position[0] = positionoftestsphere2[0];
-    // blueSphere.properties.sphere.position[1] = positionoftestsphere2[1];
-    // blueSphere.properties.sphere.position[2] = positionoftestsphere2[2];
-    // blueSphere.properties.sphere.radius = radiusTest;
-
-    // // input read for test
-    // sceneObjects[0] = tempCamera;
-    // sceneObjects[1] = redSphere;
-    // sceneObjects[2] = testPlane;
-    // sceneObjects[3] = blueSphere;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // focal length always 1, same with origin always 0,0,0
     float focalLength = 1.0;
@@ -468,10 +461,6 @@ int main(int argc, char *argv[])
     ray currentRay;
     currentRay.origin = origin;
 
-    //printf("1:%f\n", pixelColor[0]);
-    //printf("2:%f\n", pixelColor[1]);
-    //printf("3:%f\n", pixelColor[2]);
-
     // iterate over pixels in image, one a time,  shooting a ray 
     // through the center of the pixel out into the scene, 
     // looking for intersections between each ray and the scene geometry.
@@ -512,7 +501,6 @@ int main(int argc, char *argv[])
         }
         fprintf(outputFile, "\n");
     }
-
 
     fclose(outputFile);
     return 0;
