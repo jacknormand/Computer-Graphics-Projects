@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 #include "v3math.h"
 
 #define NULLOBJ 100
@@ -160,7 +161,6 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
         // get object
         currentObj = &sceneObjects[objectIndex];
 
-
         if (currentObj->kind == SPHERE)
         {
             // get new tVal from current obj
@@ -190,34 +190,132 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[2] = currentObj->properties.plane.color[2];
             }
         }
-
-
-
-        
-
-
     // otherwise doesnt fit plane or sphere, skip
     }
 
-
+    // set pixel
     dst[0] = pixelColor[0];
     dst[1] = pixelColor[1];
     dst[2] = pixelColor[2];
 
 }
 
-
-
 int main(int argc, char *argv[])
 {
     if (argc != 5)
     {
         //ERROR UNSUPPORTED FILE to stderr
-        fprintf( stderr, "Error: Unsupported Number of of Arguments\n");
+        fprintf( stderr, "Error: Unsupported number of arguments\n");
 
         // input error
         return 1;
     }
+
+    // parse in data
+    FILE* filehandle = fopen(argv[3], "r");
+
+    if (!filehandle)
+    {
+        // print
+        fprintf(stderr, "Error: Wrong input file");
+
+        // input error
+        return 1;
+    }
+
+    // get first line
+    char currentLine[2048];
+    float recoveredNum = 0.0;
+    int objIndex = 0;
+    float cameraWidth = 0;
+    float cameraHeight = 0;
+
+    // loop through lines
+    while(fgets(currentLine, 2048, filehandle) && objIndex < 128)
+    {
+        char* word = strtok(currentLine, ",");
+
+        // if camera
+        if (strcmp(word, "camera") == 0)
+        {
+            object newObj;
+            newObj.kind = CAMERA;
+
+            // loop wild word isnt null
+            while(word)
+            {
+                // get next word
+                word = strtok(NULL, ": ");
+
+                // if word isnt null
+                if(word)
+                {
+                    if (strcmp(word, "width") == 0)
+                    {
+                        // get width
+                        recoveredNum = atof(strtok(NULL, ","));
+                        cameraWidth = recoveredNum;
+
+                    }
+                    else if (strcmp(word, "height") == 0)
+                    {
+                        // get height
+                        recoveredNum = atof(strtok(NULL, ","));
+                        cameraHeight = recoveredNum;
+                    }
+                }
+
+            }
+        }
+
+        else if (strcmp(word, "sphere") == 0)
+        {
+            object newObj;
+            newObj.kind = SPHERE;
+
+            while(word)
+            {
+                // get next word
+                word = strtok(NULL, ": ");
+
+                // if word isnt null
+                if(word)
+                {
+                    if (strcmp(word, "width") == 0)
+                    {
+                        // get width
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.camera.width = recoveredNum;
+
+                    }
+                    else if (strcmp(word, "height") == 0)
+                    {
+                        // get height
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.camera.height = recoveredNum;
+                    }
+                }
+
+            }
+        }
+
+        else if (strcmp(word, "plane") == 0)
+        {
+            // while( word != NULL )
+            // {
+            //     printf("WORD: %s\n", word);
+            //     word = strtok(NULL, ",");
+            // }
+        }
+
+        objIndex++;
+    }
+
+
+
+    fclose(filehandle);
+
+
 
     // read in width height
     int sceneWidth = atoi(argv[1]);
@@ -226,6 +324,7 @@ int main(int argc, char *argv[])
     //  @HENRY PARSE INFO IN HERE FROM FILE 
     // dont need to set any values i can do that later just parse into the object list
 
+    
     // list of objects youll fill
     object sceneObjects[128];
 
@@ -295,9 +394,6 @@ int main(int argc, char *argv[])
 
 
 
-    // camera info also parsed from file
-    float cameraWidth = .5;
-    float cameraHeight = .5;
     // focal length always 1, same with origin always 0,0,0
     float focalLength = 1.0;
     float origin[] = {0,0,0};
