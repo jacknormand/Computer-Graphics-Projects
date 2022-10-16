@@ -229,6 +229,7 @@ int main(int argc, char *argv[])
     int objIndex = 0;
     float cameraWidth = 0;
     float cameraHeight = 0;
+    object sceneObjects[128];
 
     // loop through lines
     while(fgets(currentLine, 2048, filehandle) && objIndex < 128)
@@ -266,12 +267,19 @@ int main(int argc, char *argv[])
                 }
 
             }
+
+            // set to new object
+            sceneObjects[objIndex] = newObj;
+            objIndex++;
         }
+
+
 
         else if (strcmp(word, "sphere") == 0)
         {
             object newObj;
             newObj.kind = SPHERE;
+            
 
             while(word)
             {
@@ -281,37 +289,63 @@ int main(int argc, char *argv[])
                 // if word isnt null
                 if(word)
                 {
-                    if (strcmp(word, "width") == 0)
+                    if (strcmp(word, "color") == 0)
                     {
-                        // get width
+                        // get left brace
+                        word = strtok(NULL, "[");
+                        // get Red
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.camera.width = recoveredNum;
+                        newObj.properties.sphere.color[0] = recoveredNum;
 
-                    }
-                    else if (strcmp(word, "height") == 0)
-                    {
-                        // get height
+                        // get Blue
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.camera.height = recoveredNum;
+                        newObj.properties.sphere.color[1] = recoveredNum;
+
+                        // get Green
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.sphere.color[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "position") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+
+                        // get X
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.position[0] = recoveredNum;
+
+                        // get Y
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.position[1] = recoveredNum;
+
+                        // get Z
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.sphere.position[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "radius") == 0)
+                    {
+                        // get radius
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.radius = recoveredNum;
                     }
                 }
 
             }
+
+            // set to new object
+            sceneObjects[objIndex] = newObj;
+            objIndex++;
         }
 
         else if (strcmp(word, "plane") == 0)
         {
-            // while( word != NULL )
-            // {
-            //     printf("WORD: %s\n", word);
-            //     word = strtok(NULL, ",");
-            // }
+
+
+            // set to new object
+            sceneObjects[objIndex] = newObj;
+            objIndex++;
         }
-
-        objIndex++;
     }
-
-
 
     fclose(filehandle);
 
@@ -321,64 +355,57 @@ int main(int argc, char *argv[])
     int sceneWidth = atoi(argv[1]);
     int sceneHeight = atoi(argv[2]);
 
-    //  @HENRY PARSE INFO IN HERE FROM FILE 
-    // dont need to set any values i can do that later just parse into the object list
-
-    
-    // list of objects youll fill
-    object sceneObjects[128];
-
     // EXAMPLE: FILLED THIS HOW IT SHOULD BE FILLED FROM INPUT (so i can test with it)
     // camera doesnt have properties because it will be read in and width and height will be set instantly
     object tempCamera;
     tempCamera.kind = CAMERA;
 
-    object redSphere;
-    float colorRedTest[] = {1,0,0};
-    float positionoftestsphere[] = {0, 0, -5};
-    float radiusTest = .5;
-    redSphere.kind = SPHERE;
-    redSphere.properties.sphere.color[0] = colorRedTest[0];
-    redSphere.properties.sphere.color[1] = colorRedTest[1];
-    redSphere.properties.sphere.color[2] = colorRedTest[2];
-    redSphere.properties.sphere.position[0] = positionoftestsphere[0];
-    redSphere.properties.sphere.position[1] = positionoftestsphere[1];
-    redSphere.properties.sphere.position[2] = positionoftestsphere[2];
-    redSphere.properties.sphere.radius = radiusTest;
+    // object redSphere;
+    // float colorRedTest[] = {1,0,0};
+    // float positionoftestsphere[] = {0, 0, -5};
+    // float radiusTest = .5;
+    // redSphere.kind = SPHERE;
+    // redSphere.properties.sphere.color[0] = colorRedTest[0];
+    // redSphere.properties.sphere.color[1] = colorRedTest[1];
+    // redSphere.properties.sphere.color[2] = colorRedTest[2];
+    // redSphere.properties.sphere.position[0] = positionoftestsphere[0];
+    // redSphere.properties.sphere.position[1] = positionoftestsphere[1];
+    // redSphere.properties.sphere.position[2] = positionoftestsphere[2];
+    // redSphere.properties.sphere.radius = radiusTest;
 
-    object testPlane;
-    float colorGreenTest[] = {0,1,0};
-    float positionoftestplane[] = {0,-1,0};
-    float normalTest[] = {0,1,0};
-    testPlane.kind = PLANE;
-    testPlane.properties.plane.color[0] = colorGreenTest[0];
-    testPlane.properties.plane.color[1] = colorGreenTest[1];
-    testPlane.properties.plane.color[2] = colorGreenTest[2];
-    testPlane.properties.plane.position[0] = positionoftestplane[0];
-    testPlane.properties.plane.position[1] = positionoftestplane[1];
-    testPlane.properties.plane.position[2] = positionoftestplane[2];
-    testPlane.properties.plane.normal[0] = normalTest[0];
-    testPlane.properties.plane.normal[1] = normalTest[1];
-    testPlane.properties.plane.normal[2] = normalTest[2];
+    // object testPlane;
+    // float colorGreenTest[] = {0,1,0};
+    // float positionoftestplane[] = {0,-1,0};
+    // float normalTest[] = {0,1,0};
+    // testPlane.kind = PLANE;
+    // testPlane.properties.plane.color[0] = colorGreenTest[0];
+    // testPlane.properties.plane.color[1] = colorGreenTest[1];
+    // testPlane.properties.plane.color[2] = colorGreenTest[2];
+    // testPlane.properties.plane.position[0] = positionoftestplane[0];
+    // testPlane.properties.plane.position[1] = positionoftestplane[1];
+    // testPlane.properties.plane.position[2] = positionoftestplane[2];
+    // testPlane.properties.plane.normal[0] = normalTest[0];
+    // testPlane.properties.plane.normal[1] = normalTest[1];
+    // testPlane.properties.plane.normal[2] = normalTest[2];
 
 
-    object blueSphere;
-    float colorBlueTest[] = {0,0,1};
-    float positionoftestsphere2[] = {.5, 0, -5.5};
-    blueSphere.kind = SPHERE;
-    blueSphere.properties.sphere.color[0] = colorBlueTest[0];
-    blueSphere.properties.sphere.color[1] = colorBlueTest[1];
-    blueSphere.properties.sphere.color[2] = colorBlueTest[2];
-    blueSphere.properties.sphere.position[0] = positionoftestsphere2[0];
-    blueSphere.properties.sphere.position[1] = positionoftestsphere2[1];
-    blueSphere.properties.sphere.position[2] = positionoftestsphere2[2];
-    blueSphere.properties.sphere.radius = radiusTest;
+    // object blueSphere;
+    // float colorBlueTest[] = {0,0,1};
+    // float positionoftestsphere2[] = {.5, 0, -5.5};
+    // blueSphere.kind = SPHERE;
+    // blueSphere.properties.sphere.color[0] = colorBlueTest[0];
+    // blueSphere.properties.sphere.color[1] = colorBlueTest[1];
+    // blueSphere.properties.sphere.color[2] = colorBlueTest[2];
+    // blueSphere.properties.sphere.position[0] = positionoftestsphere2[0];
+    // blueSphere.properties.sphere.position[1] = positionoftestsphere2[1];
+    // blueSphere.properties.sphere.position[2] = positionoftestsphere2[2];
+    // blueSphere.properties.sphere.radius = radiusTest;
 
-    // input read for test
-    sceneObjects[0] = tempCamera;
-    sceneObjects[1] = redSphere;
-    sceneObjects[2] = testPlane;
-    sceneObjects[3] = blueSphere;
+    // // input read for test
+    // sceneObjects[0] = tempCamera;
+    // sceneObjects[1] = redSphere;
+    // sceneObjects[2] = testPlane;
+    // sceneObjects[3] = blueSphere;
 
 
 
