@@ -264,6 +264,11 @@ int main(int argc, char *argv[])
                         recoveredNum = atof(strtok(NULL, ","));
                         cameraHeight = recoveredNum;
                     }
+                    else
+                    {
+                        printf("Error: Invalid input property");
+                        return 21;
+                    }
                 }
 
             }
@@ -317,6 +322,11 @@ int main(int argc, char *argv[])
 
                         // get Z
                         recoveredNum = atof(strtok(NULL, "]"));
+                        if (recoveredNum > 0)
+                        {
+                            printf("Warning: A sphere z coordinate is positive. Changing to negative...\n");
+                            recoveredNum *= -1;
+                        }
                         newObj.properties.sphere.position[2] = recoveredNum;
                     }
                     else if (strcmp(word, "radius") == 0)
@@ -324,6 +334,11 @@ int main(int argc, char *argv[])
                         // get radius
                         recoveredNum = atof(strtok(NULL, ","));
                         newObj.properties.sphere.radius = recoveredNum;
+                    }
+                    else
+                    {
+                        printf("Error: Invalid input property");
+                        return 21;
                     }
                 }
 
@@ -397,6 +412,11 @@ int main(int argc, char *argv[])
                         recoveredNum = atof(strtok(NULL, "]"));
                         newObj.properties.plane.normal[2] = recoveredNum;
                     }
+                    else
+                    {
+                        printf("Error: Invalid input property");
+                        return 21;
+                    }
                 }
 
             }
@@ -404,6 +424,11 @@ int main(int argc, char *argv[])
             // set to new object
             sceneObjects[objIndex] = newObj;
             objIndex++;
+        }
+        else
+        {
+            printf("Error: Invalid input object");
+            return 20;
         }
     }
 
