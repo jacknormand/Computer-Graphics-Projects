@@ -7,14 +7,6 @@
 #define SPHERE 300
 #define PLANE 400
 
-// TODO 
-// parse input.csv
-// error suite
-// draw plane
-
-// DONE
-// none
-
 // this doesnt even need to be a struct cus were only using one ray over and over lol
 typedef struct ray
 {
@@ -217,7 +209,7 @@ int main(int argc, char *argv[])
     if (!filehandle)
     {
         // print
-        fprintf(stderr, "Error: Wrong input file");
+        fprintf(stderr, "Error: Wrong input file\n");
 
         // input error
         return 1;
@@ -263,11 +255,6 @@ int main(int argc, char *argv[])
                         // get height
                         recoveredNum = atof(strtok(NULL, ","));
                         cameraHeight = recoveredNum;
-                    }
-                    else
-                    {
-                        printf("Error: Invalid input property");
-                        return 21;
                     }
                 }
 
@@ -334,11 +321,6 @@ int main(int argc, char *argv[])
                         // get radius
                         recoveredNum = atof(strtok(NULL, ","));
                         newObj.properties.sphere.radius = recoveredNum;
-                    }
-                    else
-                    {
-                        printf("Error: Invalid input property");
-                        return 21;
                     }
                 }
 
@@ -412,11 +394,6 @@ int main(int argc, char *argv[])
                         recoveredNum = atof(strtok(NULL, "]"));
                         newObj.properties.plane.normal[2] = recoveredNum;
                     }
-                    else
-                    {
-                        printf("Error: Invalid input property");
-                        return 21;
-                    }
                 }
 
             }
@@ -427,7 +404,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("Error: Invalid input object");
+            printf("Error: Invalid input object\n");
             return 20;
         }
     }
@@ -438,6 +415,12 @@ int main(int argc, char *argv[])
     // read in width height
     int sceneWidth = atoi(argv[1]);
     int sceneHeight = atoi(argv[2]);
+
+    // if aspect ratio of scene and camera dont line up, give warning
+    if (sceneWidth/sceneHeight != (int)(cameraWidth/cameraHeight))
+    {
+        printf("Warning: Aspect ratio of scene and camera do not match. Picture may look screwed up\n");
+    }
 
     // focal length always 1, same with origin always 0,0,0
     float focalLength = 1.0;
