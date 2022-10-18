@@ -7,6 +7,18 @@
 #define SPHERE 300
 #define PLANE 400
 
+
+// INPUT FOR AN OUTPUT THAT LOOKS LIKE THE EXAMPLE IN THE PDF
+// The default given one had a way bigger radius that filled up the whole screen
+// and was too big for the camera. Had to make sphere smaller and move it down a little less
+// also the color of the plane in the PDF example is blue, even though the example picture is green
+// so i changed that
+
+// camera, width: 0.5, height: 0.5
+// sphere, color: [1.0, 0, 0], position: [0, .5, -5], radius: 1
+// plane, color: [0, 0, 1.0], position: [0, -1, 0], normal: [0, 1, 0]
+
+
 // this doesnt even need to be a struct cus were only using one ray over and over lol
 typedef struct ray
 {
