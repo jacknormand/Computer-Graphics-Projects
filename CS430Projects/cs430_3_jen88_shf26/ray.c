@@ -146,9 +146,9 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
     float newTVal = -1;
     float pixelColor[] = {0,0,0};
     object* currentObj;
-
+    int objectIndex;
     // loop through objects
-    for (int objectIndex = 0; objectIndex < 128; objectIndex++)
+    for ( objectIndex = 0; objectIndex < 128; objectIndex++)
     {
         // get object
         currentObj = &sceneObjects[objectIndex];
