@@ -8,17 +8,6 @@
 #define PLANE 400
 
 
-// INPUT FOR AN OUTPUT THAT LOOKS LIKE THE EXAMPLE IN THE PDF
-// The default given one had a way bigger radius that filled up the whole screen
-// and was too big for the camera. Had to make sphere smaller and move it down a little less
-// also the color of the plane in the PDF example is blue, even though the example picture is green
-// so i changed that
-
-// camera, width: 0.5, height: 0.5
-// sphere, color: [1.0, 0, 0], position: [0, .5, -5], radius: 1
-// plane, color: [0, 0, 1.0], position: [0, -1, 0], normal: [0, 1, 0]
-
-
 // this doesnt even need to be a struct cus were only using one ray over and over lol
 typedef struct ray
 {
@@ -282,6 +271,18 @@ int main(int argc, char *argv[])
             object newObj;
             newObj.kind = SPHERE;
 
+            // defaults
+            newObj.properties.sphere.color[0] = 0;
+            newObj.properties.sphere.color[1] = 0;
+            newObj.properties.sphere.color[2] = 0;
+
+            newObj.properties.sphere.position[0] = 0;
+            newObj.properties.sphere.position[1] = 0;
+            newObj.properties.sphere.position[2] = 0;
+
+            newObj.properties.sphere.radius = 0;
+
+
             while(word)
             {
                 // get next word
@@ -347,6 +348,18 @@ int main(int argc, char *argv[])
         {
             object newObj;
             newObj.kind = PLANE;
+
+            newObj.properties.plane.color[0] = 0;
+            newObj.properties.plane.color[1] = 0;
+            newObj.properties.plane.color[2] = 0;
+
+            newObj.properties.plane.position[0] = 0;
+            newObj.properties.plane.position[1] = 0;
+            newObj.properties.plane.position[2] = 0;
+
+            newObj.properties.plane.normal[0] = 0;
+            newObj.properties.plane.normal[1] = 0;
+            newObj.properties.plane.normal[2] = 0;
 
             while(word)
             {
@@ -435,7 +448,7 @@ int main(int argc, char *argv[])
     }
 
     // focal length always 1, same with origin always 0,0,0
-    float focalLength = 1.0;
+    float focalLength = 1;
     float origin[] = {0,0,0};
     // horizontal and vertical floats to traverse view
     float horizontal[] = {cameraWidth, 0, 0};
