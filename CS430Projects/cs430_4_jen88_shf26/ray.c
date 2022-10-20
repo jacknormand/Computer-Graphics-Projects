@@ -201,14 +201,14 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 v3_normalize(lightDir,lightDir);
 
                 float dotty = v3_dot_product(normalOne, lightDir);
-                if( dotty < 0.0)
-                {
-                    printf("LESS\n");
-                    dotty = 0.0;
-                }
-                pixelColor[0] *= sceneObjects[3].properties.light.color[0] * dotty;
-                pixelColor[1] *= sceneObjects[3].properties.light.color[1] * dotty;
-                pixelColor[2] *= sceneObjects[3].properties.light.color[2] * dotty;
+                // if( dotty < 0.0)
+                // {
+                //     printf("LESS\n");
+                //     dotty = -2.0;
+                // }
+                pixelColor[0] *= (sceneObjects[3].properties.light.color[0] * dotty);
+                pixelColor[1] *= (sceneObjects[3].properties.light.color[1] * dotty);
+                pixelColor[2] *= (sceneObjects[3].properties.light.color[2] * dotty);
 
             }
         }
