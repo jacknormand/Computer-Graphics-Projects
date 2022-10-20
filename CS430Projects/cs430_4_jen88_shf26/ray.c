@@ -6,6 +6,7 @@
 #define CAMERA 200
 #define SPHERE 300
 #define PLANE 400
+#define LIGHT 500
 
 // TODO: change attributes and add new ones
 // add shadows
@@ -37,15 +38,30 @@ typedef struct object
         {
             float position[3];
             float radius;
-            float color[3];
+            float diffuse_color[3];
+            float specular_color[3];
         }sphere;
 
         struct plane
         {
             float position[3];
             float normal[3];
-            float color[3];
+            float diffuse_color[3];
+            // add specular color?
         }plane;
+
+        struct light
+        {
+            float color[3];
+            float theta;
+            float radiala0;
+            float radiala1;
+            float radiala2;
+            float angulara0;
+            float position[3];
+            float direction[3];
+
+        }light;
         
     }properties;
 
@@ -166,9 +182,9 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
             if (newTVal >= 0 && newTVal < nearestTVal)
             {
                 nearestTVal = newTVal;
-                pixelColor[0] = currentObj->properties.sphere.color[0];
-                pixelColor[1] = currentObj->properties.sphere.color[1];
-                pixelColor[2] = currentObj->properties.sphere.color[2];
+                pixelColor[0] = currentObj->properties.sphere.diffuse_color[0];
+                pixelColor[1] = currentObj->properties.sphere.diffuse_color[1];
+                pixelColor[2] = currentObj->properties.sphere.diffuse_color[2];
 
             }
         }
@@ -181,9 +197,9 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
             if (newTVal >= 0 && newTVal < nearestTVal)
             {
                 nearestTVal = newTVal;
-                pixelColor[0] = currentObj->properties.plane.color[0];
-                pixelColor[1] = currentObj->properties.plane.color[1];
-                pixelColor[2] = currentObj->properties.plane.color[2];
+                pixelColor[0] = currentObj->properties.plane.diffuse_color[0];
+                pixelColor[1] = currentObj->properties.plane.diffuse_color[1];
+                pixelColor[2] = currentObj->properties.plane.diffuse_color[2];
             }
         }
     // otherwise doesnt fit plane or sphere, skip
@@ -275,13 +291,17 @@ int main(int argc, char *argv[])
             newObj.kind = SPHERE;
 
             // defaults
-            newObj.properties.sphere.color[0] = 0;
-            newObj.properties.sphere.color[1] = 0;
-            newObj.properties.sphere.color[2] = 0;
+            newObj.properties.sphere.diffuse_color[0] = 0;
+            newObj.properties.sphere.diffuse_color[1] = 0;
+            newObj.properties.sphere.diffuse_color[2] = 0;
 
             newObj.properties.sphere.position[0] = 0;
             newObj.properties.sphere.position[1] = 0;
             newObj.properties.sphere.position[2] = 0;
+
+            newObj.properties.sphere.specular_color[0] = 0;
+            newObj.properties.sphere.specular_color[1] = 0;
+            newObj.properties.sphere.specular_color[2] = 0;
 
             newObj.properties.sphere.radius = 0;
 
@@ -294,22 +314,41 @@ int main(int argc, char *argv[])
                 // if word isnt null
                 if(word)
                 {
-                    if (strcmp(word, "color") == 0)
+                    if (strcmp(word, "diffuse_color") == 0)
                     {
                         // get left brace
                         word = strtok(NULL, "[");
                         // get Red
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.sphere.color[0] = recoveredNum;
+                        newObj.properties.sphere.diffuse_color[0] = recoveredNum;
 
                         // get Blue
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.sphere.color[1] = recoveredNum;
+                        newObj.properties.sphere.diffuse_color[1] = recoveredNum;
 
                         // get Green
                         recoveredNum = atof(strtok(NULL, "]"));
-                        newObj.properties.sphere.color[2] = recoveredNum;
+                        newObj.properties.sphere.diffuse_color[2] = recoveredNum;
                     }
+
+                    // get specular color
+                    else if (strcmp(word, "specular_color") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+                        // get Red
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.specular_color[0] = recoveredNum;
+
+                        // get Blue
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.specular_color[1] = recoveredNum;
+
+                        // get Green
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.sphere.specular_color[2] = recoveredNum;
+                    }
+
                     else if (strcmp(word, "position") == 0)
                     {
                         // get left brace
@@ -352,9 +391,9 @@ int main(int argc, char *argv[])
             object newObj;
             newObj.kind = PLANE;
 
-            newObj.properties.plane.color[0] = 0;
-            newObj.properties.plane.color[1] = 0;
-            newObj.properties.plane.color[2] = 0;
+            newObj.properties.plane.diffuse_color[0] = 0;
+            newObj.properties.plane.diffuse_color[1] = 0;
+            newObj.properties.plane.diffuse_color[2] = 0;
 
             newObj.properties.plane.position[0] = 0;
             newObj.properties.plane.position[1] = 0;
@@ -372,21 +411,21 @@ int main(int argc, char *argv[])
                 // if word isnt null
                 if(word)
                 {
-                    if (strcmp(word, "color") == 0)
+                    if (strcmp(word, "diffuse_color") == 0)
                     {
                         // get left brace
                         word = strtok(NULL, "[");
                         // get Red
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.plane.color[0] = recoveredNum;
+                        newObj.properties.plane.diffuse_color[0] = recoveredNum;
 
                         // get Blue
                         recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.plane.color[1] = recoveredNum;
+                        newObj.properties.plane.diffuse_color[1] = recoveredNum;
 
                         // get Green
                         recoveredNum = atof(strtok(NULL, "]"));
-                        newObj.properties.plane.color[2] = recoveredNum;
+                        newObj.properties.plane.diffuse_color[2] = recoveredNum;
                     }
                     else if (strcmp(word, "position") == 0)
                     {
@@ -430,6 +469,137 @@ int main(int argc, char *argv[])
             sceneObjects[objIndex] = newObj;
             objIndex++;
         }
+
+
+
+
+        else if (strcmp(word, "light") == 0)
+        {
+            object newObj;
+            newObj.kind = LIGHT;
+
+            // defaults
+            newObj.properties.light.color[0] = 0;
+            newObj.properties.light.color[1] = 0;
+            newObj.properties.light.color[2] = 0;
+
+            newObj.properties.light.theta = 0;
+            newObj.properties.light.radiala0 = 0;
+            newObj.properties.light.radiala1 = 0;
+            newObj.properties.light.radiala2 = 0;
+            newObj.properties.light.angulara0 = 0;
+
+            newObj.properties.light.position[0] = 0;
+            newObj.properties.light.position[1] = 0;
+            newObj.properties.light.position[2] = 0;
+
+            newObj.properties.light.direction[0] = 0;
+            newObj.properties.light.direction[1] = 0;
+            newObj.properties.light.direction[2] = 0;
+
+
+            while(word)
+            {
+                // get next word
+                word = strtok(NULL, ": ");
+
+                // if word isnt null
+                if(word)
+                {
+                    // get light color
+                    if (strcmp(word, "color") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+                        // get Red
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.color[0] = recoveredNum;
+
+                        // get Blue
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.color[1] = recoveredNum;
+
+                        // get Green
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.light.color[2] = recoveredNum;
+                    }
+
+                    // get specular color
+                    else if (strcmp(word, "position") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+                        // get Red
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.position[0] = recoveredNum;
+
+                        // get Blue
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.position[1] = recoveredNum;
+
+                        // get Green
+                        recoveredNum = atof(strtok(NULL, "]"));
+                        newObj.properties.light.position[2] = recoveredNum;
+                    }
+
+                    else if (strcmp(word, "direction") == 0)
+                    {
+                        // get left brace
+                        word = strtok(NULL, "[");
+
+                        // get X
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.direction[0] = recoveredNum;
+
+                        // get Y
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.direction[1] = recoveredNum;
+
+                        // get Z
+                        recoveredNum = atof(strtok(NULL, "]"));
+
+                        newObj.properties.light.direction[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "theta") == 0)
+                    {
+                        // get theta
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.theta = recoveredNum;
+                    }
+                    else if (strcmp(word, "radial-a0") == 0)
+                    {
+                        // get radiala0
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.radiala0 = recoveredNum;
+                    }
+                    else if (strcmp(word, "radial-a1") == 0)
+                    {
+                        // get radiala1
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.radiala1 = recoveredNum;
+                    }
+                    else if (strcmp(word, "radial-a2") == 0)
+                    {
+                        // get radiala2
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.radiala2 = recoveredNum;
+                    }
+                    else if (strcmp(word, "angular-a0") == 0)
+                    {
+                        // get angulara0
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.light.angulara0 = recoveredNum;
+                    }
+
+                }
+
+            }
+
+            // set to new object
+            sceneObjects[objIndex] = newObj;
+            objIndex++;
+        }
+
         else
         {
             printf("Error: Invalid input object\n");
