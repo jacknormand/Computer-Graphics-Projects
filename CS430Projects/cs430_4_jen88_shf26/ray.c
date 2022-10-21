@@ -186,30 +186,33 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[1] = currentObj->properties.sphere.diffuse_color[1];
                 pixelColor[2] = currentObj->properties.sphere.diffuse_color[2];
 
-                // NEW NEW 
-                float hitpoint[] = {0,0,0};
-                float directionTimesLen[] = {inputRay.direction[0],inputRay.direction[1],inputRay.direction[2]};
-                float normalOne[] = {0,0,0};
-                float lightDir[] = {0,0,0};
 
-                v3_scale(directionTimesLen, nearestTVal);
-                v3_add(hitpoint,inputRay.origin, directionTimesLen);
-                v3_subtract(normalOne, hitpoint, currentObj->properties.sphere.position);
-                v3_normalize(normalOne, normalOne);
+
+                // call to function for light
+
                 
-                v3_subtract(lightDir, sceneObjects[3].properties.light.position, hitpoint);
-                v3_normalize(lightDir,lightDir);
+                // // NEW NEW 
+                // float hitpoint[] = {0,0,0};
+                // float directionTimesLen[] = {inputRay.direction[0],inputRay.direction[1],inputRay.direction[2]};
+                // float normalOne[] = {0,0,0};
+                // float lightDir[] = {0,0,0};
 
-                float dotty = v3_dot_product(normalOne, lightDir);
+                // v3_scale(directionTimesLen, nearestTVal);
+                // v3_add(hitpoint,inputRay.origin, directionTimesLen);
+                // v3_subtract(normalOne, hitpoint, currentObj->properties.sphere.position);
+                // v3_normalize(normalOne, normalOne);
+                // // LIGHT COLOR MUST NTO EXCEED 1 THO
+                // v3_subtract(lightDir, sceneObjects[3].properties.light.position, hitpoint);
+                // v3_normalize(lightDir,lightDir);
+
+                // float dotty = v3_dot_product(normalOne, lightDir);
                 // if( dotty < 0.0)
                 // {
-                //     printf("LESS\n");
-                //     dotty = -2.0;
+                //     dotty = 0;
                 // }
-                pixelColor[0] *= (sceneObjects[3].properties.light.color[0] * dotty);
-                pixelColor[1] *= (sceneObjects[3].properties.light.color[1] * dotty);
-                pixelColor[2] *= (sceneObjects[3].properties.light.color[2] * dotty);
 
+
+                // attenuation * dot of tolight, and point.normal
             }
         }
 
@@ -224,6 +227,7 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[0] = currentObj->properties.plane.diffuse_color[0];
                 pixelColor[1] = currentObj->properties.plane.diffuse_color[1];
                 pixelColor[2] = currentObj->properties.plane.diffuse_color[2];
+
             }
         }
     // otherwise doesnt fit plane or sphere, skip
