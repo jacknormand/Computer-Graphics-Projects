@@ -185,34 +185,124 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[0] = currentObj->properties.sphere.diffuse_color[0];
                 pixelColor[1] = currentObj->properties.sphere.diffuse_color[1];
                 pixelColor[2] = currentObj->properties.sphere.diffuse_color[2];
+                
+                // NEW NEW 
+                float hitpoint[] = {0,0,0};
+                float directionTimesLen[] = {inputRay.direction[0],inputRay.direction[1],inputRay.direction[2]};
+                float normalOne[] = {0,0,0};
+                float lightDir[] = {0,0,0};
+                float viewDir[] = {0,0,0};
+                float reflectDir[] = {0,0,0};
+
+                v3_scale(directionTimesLen, nearestTVal);
+                v3_add(hitpoint,inputRay.origin, directionTimesLen);
+                v3_subtract(normalOne, hitpoint, currentObj->properties.sphere.position);
+                v3_normalize(normalOne, normalOne);
+                // LIGHT COLOR MUST NTO EXCEED 1 THO
+                v3_subtract(lightDir, sceneObjects[3].properties.light.position, hitpoint);
+                v3_normalize(lightDir,lightDir);
+
+                // get that dot
+                float dotty = v3_dot_product(normalOne, lightDir);
+
+                // clamp value
+                if( dotty < 0.0)
+                {
+                    dotty = 0;
+                }
+
+                // length of ray might be wrong ray lol
+                float lengthofray = v3_length(hitpoint);
+                float attenuation = 1/(sceneObjects[3].properties.light.radiala0 + (sceneObjects[3].properties.light.radiala1 * lengthofray) + (sceneObjects[3].properties.light.radiala2* (lengthofray*lengthofray)));
+
+                // diffuse = light color times dot product
+                float diffuse[3] = {sceneObjects[3].properties.light.color[0],sceneObjects[3].properties.light.color[1],sceneObjects[3].properties.light.color[2]};
+                v3_scale(diffuse,dotty);
+                v3_scale(diffuse, attenuation);
 
 
+                float resultSpec;
+                float specular[3] = {0,0,0};
 
-                // call to function for light
+                // spec
+                float viewpos[] = {0,0,0};
+                v3_subtract(viewDir, viewpos, hitpoint);
+                v3_normalize(viewDir,viewDir);
+
+                float negLightdir[] = {lightDir[0],lightDir[1],lightDir[2]};
+                v3_scale(negLightdir, -1);
+                v3_reflect(reflectDir, negLightdir, normalOne);
+
+                //spec result
+                resultSpec = v3_dot_product(viewDir,reflectDir);
 
                 
-                // // NEW NEW 
-                // float hitpoint[] = {0,0,0};
-                // float directionTimesLen[] = {inputRay.direction[0],inputRay.direction[1],inputRay.direction[2]};
-                // float normalOne[] = {0,0,0};
-                // float lightDir[] = {0,0,0};
 
-                // v3_scale(directionTimesLen, nearestTVal);
-                // v3_add(hitpoint,inputRay.origin, directionTimesLen);
-                // v3_subtract(normalOne, hitpoint, currentObj->properties.sphere.position);
-                // v3_normalize(normalOne, normalOne);
-                // // LIGHT COLOR MUST NTO EXCEED 1 THO
-                // v3_subtract(lightDir, sceneObjects[3].properties.light.position, hitpoint);
-                // v3_normalize(lightDir,lightDir);
+                // do spec eq if greater than 0
+                if (dotty > 0 && resultSpec > 0)
+                {
+                    resultSpec = pow(resultSpec, 20);
+                    specular[0] = sceneObjects[3].properties.sphere.specular_color[0];
+                    specular[1] = sceneObjects[3].properties.sphere.specular_color[1];
+                    specular[2] = sceneObjects[3].properties.sphere.specular_color[2];
+                    v3_scale(specular, resultSpec);
+                    v3_scale(specular, attenuation);
+                }
+                else 
+                {
+                    resultSpec = 0;
+                }
 
-                // float dotty = v3_dot_product(normalOne, lightDir);
-                // if( dotty < 0.0)
-                // {
-                //     dotty = 0;
-                // }
+                // diffuse only (multiply by diffuses and spec and ambient if wanted to test)
+                // pixelColor[0] = (pixelColor[0] * (attenuation* (diffuse[0] + specular[0])));
+                // pixelColor[1] = (pixelColor[1] * (attenuation* (diffuse[1] + specular[1])));
+                // pixelColor[2] = (pixelColor[2] * (attenuation* (diffuse[2] + specular[2])));
+
+                // pixelColor[0] = ((pixelColor[0] * diffuse[0])+ specular[0] );
+                // pixelColor[1] = ((pixelColor[1] * diffuse[1])+ specular[1] );
+                // pixelColor[2] = ((pixelColor[2] * diffuse[2])+ specular[2] );
 
 
-                // attenuation * dot of tolight, and point.normal
+                // pixelColor[0] = diffuse[0]+specular[0];
+                // pixelColor[1] = diffuse[1]+specular[1];
+                // pixelColor[2] = diffuse[2]+specular[2];
+
+                pixelColor[0] *= diffuse[0];
+                pixelColor[1] *= diffuse[1];
+                pixelColor[2] *= diffuse[2];
+
+                v3_add(pixelColor, pixelColor,specular);
+
+                // float diffuseSpec[3] = {0,0,0};
+                // v3_add(pixelColor, diffuse, specular);
+                // float pixel[3] = {1,0,0};
+                //v3_add(pixelColor, pixelColor, pixel);
+
+
+                
+                // v3_scale(diffuseSpec,attenuation-.5);
+
+                // // v3_scale(diffuseSpec,attenuation);
+                // //float final[3] = {0,0,0};
+                // // //v3_cross_product(pixelColor, pixelColor, diffuse);
+                // v3_add(pixelColor, pixelColor, diffuseSpec);
+
+
+                
+
+
+                if (pixelColor[0] > 1)
+                {
+                    pixelColor[0] = 1;
+                }
+                if (pixelColor[1] > 1)
+                {
+                    pixelColor[1] = 1;
+                }
+                if (pixelColor[2] > 1)
+                {
+                    pixelColor[2] = 1;
+                }
             }
         }
 
@@ -227,6 +317,105 @@ void getColor(float* dst, ray inputRay, object sceneObjects[])
                 pixelColor[0] = currentObj->properties.plane.diffuse_color[0];
                 pixelColor[1] = currentObj->properties.plane.diffuse_color[1];
                 pixelColor[2] = currentObj->properties.plane.diffuse_color[2];
+
+
+                // NEW NEW 
+                float hitpoint[] = {0,0,0};
+                float directionTimesLen[] = {inputRay.direction[0],inputRay.direction[1],inputRay.direction[2]};
+                float normalOne[] = {0,0,0};
+                float lightDir[] = {0,0,0};
+                float viewDir[] = {0,0,0};
+                float reflectDir[] = {0,0,0};
+
+                v3_scale(directionTimesLen, nearestTVal);
+                v3_add(hitpoint,inputRay.origin, directionTimesLen);
+                v3_subtract(normalOne, hitpoint, currentObj->properties.plane.position);
+                v3_normalize(normalOne, normalOne);
+                // LIGHT COLOR MUST NTO EXCEED 1 THO
+                v3_subtract(lightDir, sceneObjects[3].properties.light.position, hitpoint);
+                v3_normalize(lightDir,lightDir);
+
+                // get that dot
+                float dotty = v3_dot_product(normalOne, lightDir);
+
+                // clamp value
+                if( dotty < 0.0)
+                {
+                    dotty = 0;
+                }
+
+                // length of ray might be wrong ray lol
+                float lengthofray = v3_length(hitpoint);
+                float attenuation = 1/(sceneObjects[3].properties.light.radiala0 + (sceneObjects[3].properties.light.radiala1 * lengthofray) + (sceneObjects[3].properties.light.radiala2* (lengthofray*lengthofray)));
+
+                // diffuse = light color times dot product
+                float diffuse[3] = {sceneObjects[3].properties.light.color[0],sceneObjects[3].properties.light.color[1],sceneObjects[3].properties.light.color[2]};
+                v3_scale(diffuse,dotty);
+                v3_scale(diffuse, attenuation);
+
+                
+
+                // diffuse only (multiply by diffuses and spec and ambient if wanted to test)
+                // pixelColor[0] = (pixelColor[0] * (attenuation* (diffuse[0] + specular[0])));
+                // pixelColor[1] = (pixelColor[1] * (attenuation* (diffuse[1] + specular[1])));
+                // pixelColor[2] = (pixelColor[2] * (attenuation* (diffuse[2] + specular[2])));
+
+                // pixelColor[0] = ((pixelColor[0] * diffuse[0])+ specular[0] );
+                // pixelColor[1] = ((pixelColor[1] * diffuse[1])+ specular[1] );
+                // pixelColor[2] = ((pixelColor[2] * diffuse[2])+ specular[2] );
+
+
+                // pixelColor[0] = diffuse[0]+specular[0];
+                // pixelColor[1] = diffuse[1]+specular[1];
+                // pixelColor[2] = diffuse[2]+specular[2];
+
+                pixelColor[0] *= diffuse[0];
+                pixelColor[1] *= diffuse[1];
+                pixelColor[2] *= diffuse[2];
+
+                // float diffuseSpec[3] = {0,0,0};
+                // v3_add(pixelColor, diffuse, specular);
+                // float pixel[3] = {1,0,0};
+                //v3_add(pixelColor, pixelColor, pixel);
+
+
+                
+                // v3_scale(diffuseSpec,attenuation-.5);
+
+                // // v3_scale(diffuseSpec,attenuation);
+                // //float final[3] = {0,0,0};
+                // // //v3_cross_product(pixelColor, pixelColor, diffuse);
+                // v3_add(pixelColor, pixelColor, diffuseSpec);
+
+
+                
+
+
+                if (pixelColor[0] > 1)
+                {
+                    pixelColor[0] = 1;
+                }
+                if (pixelColor[1] > 1)
+                {
+                    pixelColor[1] = 1;
+                }
+                if (pixelColor[2] > 1)
+                {
+                    pixelColor[2] = 1;
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             }
         }
