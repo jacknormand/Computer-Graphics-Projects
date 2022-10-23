@@ -184,13 +184,33 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         v3_subtract(normalOne, hitpoint, currentObj->properties.sphere.position);
         v3_normalize(normalOne, normalOne);
         v3_subtract(lightDir, currentLight->properties.light.position, hitpoint);
-
-        // USE LIGHT DIR FOR SHADOWS
-
-
-
-
         v3_normalize(lightDirNormal,lightDir);
+
+
+        // shadow test initialize
+        int objShadowInd;
+        float result;
+
+        // create new ray
+        ray newRay;
+        newRay.origin = hitpoint;
+        newRay.direction = lightDir;
+        
+        // loop through objects, check if theres an intersection with a sphere for a shadow
+        for (objShadowInd = 0; objShadowInd < 128; objShadowInd++)
+        {
+            result = intersectObj(&sceneObjects[objShadowInd], newRay);
+
+            if (result >= 0 && sceneObjects[objShadowInd].kind == SPHERE)
+            {
+                // if in shadow, return black
+                dst[0] = 0;
+                dst[1] = 0;
+                dst[2] = 0;
+                return;
+            }
+        }
+
         // get that diffuse coefficient
         float dotty = v3_dot_product(normalOne, lightDirNormal);
 
@@ -255,8 +275,28 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // length of ray might be wrong ray lol
         float lengthofray = v3_length(lightDir);
-        float attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
-        (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        float attenuation;
+
+
+        if( currentLight->properties.light.theta == 0)
+        {
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
+        else
+        {
+            attenuation = 0;
+            // /// dotty is N dot L
+            // v3_normalize(negLightdir, negLightdir);
+            // v3_normalize(lightDir, lightDir);
+            // float rho = v3_dot_product(negLightdir, lightDir);
+
+            // rho = pow(rho, currentLight->properties.light.angulara0);
+
+            // attenuation = rho/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
+
 
         // add diffuse and spec
         v3_add(specDiffuse, specular, diffuse);
@@ -340,7 +380,30 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // length of ray might be wrong ray lol
         float lengthofray = v3_length(lightDir);
-        float attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        float attenuation;
+
+
+        float negLightdir[] = {lightDirNormal[0],lightDirNormal[1],lightDirNormal[2]};
+        v3_scale(negLightdir, -1);
+
+       if( currentLight->properties.light.theta == 0)
+        {
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
+        else
+        {
+            attenuation = 0;
+            // /// dotty is N dot L
+            // v3_normalize(negLightdir, negLightdir);
+            // v3_normalize(lightDir, lightDir);
+            // float rho = v3_dot_product(negLightdir, lightDir);
+
+            // rho = pow(rho, currentLight->properties.light.angulara0);
+
+            // attenuation = rho/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
 
 
         // GLITCH HERE. DIFFUSE LIGHTING NOT WORKING PROPERLY ON THE PLANE. 
