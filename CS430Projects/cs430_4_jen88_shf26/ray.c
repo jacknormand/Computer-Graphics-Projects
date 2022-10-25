@@ -275,7 +275,7 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // length of ray might be wrong ray lol
         float lengthofray = v3_length(lightDir);
-        float attenuation;
+        float attenuation = 0;
 
 
         if( currentLight->properties.light.theta == 0)
@@ -285,18 +285,40 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         }
         else
         {
-            attenuation = 0;
+            // no spotlight support yet
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+
+
+
+
+            // float pi = 3.14159265359;
+            // float beam = currentLight->properties.light.theta * (pi/180);
+            // float fall = beam*2;
+
+            // // Cos theta
             // /// dotty is N dot L
             // v3_normalize(negLightdir, negLightdir);
             // v3_normalize(lightDir, lightDir);
             // float rho = v3_dot_product(negLightdir, lightDir);
 
-            // rho = pow(rho, currentLight->properties.light.angulara0);
+            // rho = acos(rho);
+            // float portion = 1;
+            // printf("roh:%f other:%f\n", rho, beam+fall);
+            // if (rho>beam+fall)
+            // {
+                
+            //     attenuation = portion;
+            // }
+            // else
+            // {
+            //     float portion = 1-((rho-beam) / fall); 
+            // }
 
-            // attenuation = rho/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
-            // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+            // attenuation = portion;
+            // // attenuation = final/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            // // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
         }
-
 
         // add diffuse and spec
         v3_add(specDiffuse, specular, diffuse);
@@ -393,7 +415,8 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         }
         else
         {
-            attenuation = 0;
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
             // /// dotty is N dot L
             // v3_normalize(negLightdir, negLightdir);
             // v3_normalize(lightDir, lightDir);

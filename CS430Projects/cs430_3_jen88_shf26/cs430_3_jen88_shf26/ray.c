@@ -519,7 +519,8 @@ int main(int argc, char *argv[])
             // get ray color 
             getColor(pixelColor, currentRay, sceneObjects); 
             
-            fprintf(outputFile, "%f %f %f ", pixelColor[0]*255.9, pixelColor[1]*255.9, pixelColor[2]*255.9);
+            // print out the pixel
+            fprintf(outputFile, "%f %f %f ", pixelColor[0]*255, pixelColor[1]*255, pixelColor[2]*255);
 
             // reset (this is ugly ik)
             directionVar[0] = lowerLeft[0];
