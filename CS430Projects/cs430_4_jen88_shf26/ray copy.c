@@ -8,7 +8,9 @@
 #define PLANE 400
 #define LIGHT 500
 
-// the raycaster for cs430 by jack normand
+// TODO: change attributes and add new ones
+// add shadows
+
 
 // this doesnt even need to be a struct cus were only using one ray over and over lol
 typedef struct ray
@@ -45,7 +47,7 @@ typedef struct object
             float position[3];
             float normal[3];
             float diffuse_color[3];
-            float specular_color[3];
+            // add specular color?
         }plane;
 
         struct light
@@ -67,9 +69,9 @@ typedef struct object
 
 
 int main();
-void getColor(float* dest, ray inputRay, object sceneObjects[]);
+void getColor(float* dst, ray inputRay, object sceneObjects[]);
 float intersectObj(object* objectShotAt, ray inputRay);
-void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLight, float tVal, object sceneObjects[]);
+void getLitColor(float *dest, ray inputRay, object* currentObj, object* currentLight, float tVal, object sceneObjects[]);
 
 float intersectObj(object* objectShotAt, ray inputRay)
 {
@@ -273,41 +275,49 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // length of ray might be wrong ray lol
         float lengthofray = v3_length(lightDir);
-        float attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
-        (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
-        float angAttenuation = 1;
+        float attenuation = 0;
 
-        // if spotlight, calculate
-        if( currentLight->properties.light.theta > 0)
+
+        if( currentLight->properties.light.theta == 0)
         {
-            float pi = 3.14159265359;
-            float radians = currentLight->properties.light.theta * (pi/180);
-            
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
+        else
+        {
+            // no spotlight support yet
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
 
-            float vectorOne[] = {0,0,0};
-            float vectorTwo[] = {0,0,0};
 
-            v3_subtract(vectorOne, currentLight->properties.light.direction, currentLight->properties.light.position);
-            v3_normalize(vectorOne, vectorOne);
 
-            v3_subtract(vectorTwo, hitpoint, currentLight->properties.light.position);
-            v3_normalize(vectorTwo, vectorTwo);
 
-            float angle1 = v3_dot_product(vectorOne, vectorTwo);
-            angle1 = acos(angle1);
-            if(angle1 > 1)
-            {
-                printf("%f\n", angle1);
-            }
-            if (angle1 > radians)
-            {
-                angAttenuation = 0;
-            }
-            else
-            {
+            // float pi = 3.14159265359;
+            // float beam = currentLight->properties.light.theta * (pi/180);
+            // float fall = beam*2;
 
-                angAttenuation = pow(angle1, currentLight->properties.light.angulara0);
-            }
+            // // Cos theta
+            // /// dotty is N dot L
+            // v3_normalize(negLightdir, negLightdir);
+            // v3_normalize(lightDir, lightDir);
+            // float rho = v3_dot_product(negLightdir, lightDir);
+
+            // rho = acos(rho);
+            // float portion = 1;
+            // printf("roh:%f other:%f\n", rho, beam+fall);
+            // if (rho>beam+fall)
+            // {
+                
+            //     attenuation = portion;
+            // }
+            // else
+            // {
+            //     float portion = 1-((rho-beam) / fall); 
+            // }
+
+            // attenuation = portion;
+            // // attenuation = final/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            // // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
         }
 
         // add diffuse and spec
@@ -315,9 +325,6 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // calculate attenuation
         v3_scale(specDiffuse, attenuation);
-
-        // spotlight
-        v3_scale(specDiffuse, angAttenuation);
 
         // add spec and diffuse to get final pixel color
         v3_add(ambient, ambient, specDiffuse);
@@ -390,95 +397,45 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         // diffuse color
         v3_scale(diffuse,dotty);
 
-        // make this stuff for specular
-        float resultSpec;
-        float specular[] = {0,0,0};
-        float viewpos[] = {0,0,0};
-        float viewDir[] = {0,0,0};
-        float reflectDir[] = {0,0,0};
-        // math for specular
-        v3_subtract(viewDir, viewpos, hitpoint);
-        v3_normalize(viewDir,viewDir);
-        float negLightdir[] = {lightDirNormal[0],lightDirNormal[1],lightDirNormal[2]};
-        v3_scale(negLightdir, -1);
-        v3_reflect(reflectDir, negLightdir, currentObj->properties.plane.normal);
-
-        //spec result coefficient
-        resultSpec = v3_dot_product(viewDir,reflectDir);
-
-        // get spec result from shininess
-        if (resultSpec > 0)
-        {
-            resultSpec = pow(resultSpec, 20);
-        }
-        else 
-        {
-            resultSpec = 0;
-        }
-
-        specular[0] = currentObj->properties.plane.specular_color[0];
-        specular[1] = currentObj->properties.plane.specular_color[1];
-        specular[2] = currentObj->properties.plane.specular_color[2];
-
-        specular[0] *= currentLight->properties.light.color[0];
-        specular[1] *= currentLight->properties.light.color[1];
-        specular[2] *= currentLight->properties.light.color[2];
-
-        v3_scale(specular, resultSpec);
-
-        float specDiffuse[] = {0,0,0};
-
         // length of ray might be wrong ray lol
         float lengthofray = v3_length(lightDir);
-        float attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
-        (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
-        float angAttenuation = 1;
+        float attenuation;
 
-        // if spotlight, calculate
-        if( currentLight->properties.light.theta > 0)
+
+        float negLightdir[] = {lightDirNormal[0],lightDirNormal[1],lightDirNormal[2]};
+        v3_scale(negLightdir, -1);
+
+       if( currentLight->properties.light.theta == 0)
         {
-            float pi = 3.14159265359;
-            float radians = currentLight->properties.light.theta * (pi/180);
-            
-
-            float vectorOne[] = {0,0,0};
-            float vectorTwo[] = {0,0,0};
-
-            v3_subtract(vectorOne, currentLight->properties.light.direction, currentLight->properties.light.position);
-            v3_normalize(vectorOne, vectorOne);
-
-            v3_subtract(vectorTwo, hitpoint, currentLight->properties.light.position);
-            v3_normalize(vectorTwo, vectorTwo);
-
-            float angle1 = v3_dot_product(vectorOne, vectorTwo);
-            angle1 = acos(angle1);
-
-            // if not in spotlight, then we set it to zero
-            if (angle1 > radians)
-            {
-                angAttenuation = 0;
-            }
-            else
-            {
-                angAttenuation = pow(angle1, currentLight->properties.light.angulara0);
-            }
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
         }
-        
-        // add diffuse and spec
-        v3_add(specDiffuse, specular, diffuse);
+        else
+        {
+            attenuation = 1/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+            // /// dotty is N dot L
+            // v3_normalize(negLightdir, negLightdir);
+            // v3_normalize(lightDir, lightDir);
+            // float rho = v3_dot_product(negLightdir, lightDir);
+
+            // rho = pow(rho, currentLight->properties.light.angulara0);
+
+            // attenuation = rho/(currentLight->properties.light.radiala0 + (currentLight->properties.light.radiala1 * lengthofray) + 
+            // (currentLight->properties.light.radiala2* (lengthofray*lengthofray)));
+        }
+
+        float stupidFix[] = {currentObj->properties.plane.diffuse_color[0],currentObj->properties.plane.diffuse_color[1],currentObj->properties.plane.diffuse_color[2]};
+        // add diffuse
+        v3_add(stupidFix, stupidFix, diffuse);
+        v3_add(stupidFix, stupidFix, ambient);
 
         // calculate attenuation
-        v3_scale(specDiffuse, attenuation);
-
-        // spotlight
-        v3_scale(specDiffuse, angAttenuation);
-
-        // add spec and diffuse to get final pixel color
-        v3_add(ambient, ambient, specDiffuse);
+        v3_scale(stupidFix, attenuation);
         
-        dst[0] = ambient[0];
-        dst[1] = ambient[1];
-        dst[2] = ambient[2];
+        dst[0] = stupidFix[0];
+        dst[1] = stupidFix[1];
+        dst[2] = stupidFix[2];
 
     }
     
@@ -494,7 +451,6 @@ void getColor(float* dest, ray inputRay, object sceneObjects[])
     float pixelColor[] = {0,0,0};
     float finalColor[] = {0,0,0};
     object* currentObj;
-    object* nearestObj;
     int objectIndex;
     int lightIndex;
     bool oneLight;
@@ -504,7 +460,7 @@ void getColor(float* dest, ray inputRay, object sceneObjects[])
         // get object
         currentObj = &sceneObjects[objectIndex];
 
-        if (currentObj->kind == SPHERE || currentObj->kind == PLANE)
+        if (currentObj->kind == SPHERE)
         {
             // get new tVal from current obj
             newTVal = intersectObj(currentObj, inputRay);
@@ -512,66 +468,101 @@ void getColor(float* dest, ray inputRay, object sceneObjects[])
             // get nearest
             if (newTVal >= 0 && newTVal < nearestTVal)
             {
-                // get nearest info
                 nearestTVal = newTVal;
-                nearestObj = &sceneObjects[objectIndex];
+
+                for (lightIndex = 0; lightIndex < 128; lightIndex++)
+                {
+
+                    // get light
+                    if (sceneObjects[lightIndex].kind == LIGHT)
+                    {
+                            // set oneLight to true
+                            oneLight = true;
+
+                            getLitColor(pixelColor,inputRay,currentObj, &sceneObjects[lightIndex], nearestTVal, sceneObjects);
+                            // add to final color
+                            v3_add(finalColor, finalColor, pixelColor);
+
+                            if (finalColor[0] > 1)
+                            {
+                                finalColor[0] = 1;
+                            }
+                            if (finalColor[1] > 1)
+                            {
+                                finalColor[1] = 1;
+                            }
+                            if (finalColor[2] > 1)
+                            {
+                                finalColor[2] = 1;
+                            }
+
+                    }
+                }
+
+                if (!oneLight) 
+                {
+                    finalColor[0] = currentObj->properties.sphere.diffuse_color[0];
+                    finalColor[1] = currentObj->properties.sphere.diffuse_color[1];
+                    finalColor[2] = currentObj->properties.sphere.diffuse_color[2];
+                }
+            }
+        }
+
+        else if (currentObj->kind == PLANE)
+        {
+            newTVal = intersectObj(currentObj, inputRay);
+
+            // intersects behind origin not of interest
+            if (newTVal >= 0 && newTVal < nearestTVal)
+            {
+                nearestTVal = newTVal;
+
+                for (lightIndex = 0; lightIndex < 128; lightIndex++)
+                {
+
+                    // get light
+                    if (sceneObjects[lightIndex].kind == LIGHT)
+                    {
+                        // set oneLight to true
+                        oneLight = true;
+
+                        getLitColor(pixelColor,inputRay,currentObj, &sceneObjects[lightIndex], nearestTVal, sceneObjects );
+                        // add to final color
+                        v3_add(finalColor, finalColor, pixelColor);
+
+                        if (finalColor[0] > 1)
+                        {
+                            finalColor[0] = 1;
+                        }
+                        if (finalColor[1] > 1)
+                        {
+                            finalColor[1] = 1;
+                        }
+                        if (finalColor[2] > 1)
+                        {
+                            finalColor[2] = 1;
+                        }
+
+
+                    }
+
+                }
+                
+                if (!oneLight) 
+                {
+                    finalColor[0] = currentObj->properties.plane.diffuse_color[0];
+                    finalColor[1] = currentObj->properties.plane.diffuse_color[1];
+                    finalColor[2] = currentObj->properties.plane.diffuse_color[2];
+                }
             }
         }
     // otherwise doesnt fit plane or sphere, skip
     }
 
-    // if intersection
-    if(nearestObj)
-    {
-        // with nearest tval and obj index, calculate light for every single light in array and add to final color
-        for (lightIndex = 0; lightIndex < 128; lightIndex++)
-        {
-            // get light
-            if (sceneObjects[lightIndex].kind == LIGHT)
-            {
-                    // set oneLight to true
-                    oneLight = true;
+    // with nearest tval and obj index, calculate light for every single light in array and add to final color
+    
 
-                    getLitColor(pixelColor,inputRay,nearestObj, &sceneObjects[lightIndex], nearestTVal, sceneObjects);
-                    // add to final color
-                    v3_add(finalColor, finalColor, pixelColor);
 
-                    if (finalColor[0] > 1)
-                    {
-                        finalColor[0] = 1;
-                    }
-                    if (finalColor[1] > 1)
-                    {
-                        finalColor[1] = 1;
-                    }
-                    if (finalColor[2] > 1)
-                    {
-                        finalColor[2] = 1;
-                    }
-
-            }
-        }
-
-        // if theres no lights, just paint it whatever color
-        if (!oneLight) 
-        {
-            if (nearestObj->kind == SPHERE)
-            {
-                finalColor[0] = currentObj->properties.sphere.diffuse_color[0];
-                finalColor[1] = currentObj->properties.sphere.diffuse_color[1];
-                finalColor[2] = currentObj->properties.sphere.diffuse_color[2];
-            }
-            else if (nearestObj->kind == PLANE)
-            {
-                finalColor[0] = currentObj->properties.plane.diffuse_color[0];
-                finalColor[1] = currentObj->properties.plane.diffuse_color[1];
-                finalColor[2] = currentObj->properties.plane.diffuse_color[2];
-            }
-            
-
-        }
-
-    }
 
     // set pixel
     dest[0] = finalColor[0];
@@ -771,10 +762,6 @@ int main(int argc, char *argv[])
             newObj.properties.plane.normal[1] = 0;
             newObj.properties.plane.normal[2] = 0;
 
-            newObj.properties.sphere.specular_color[0] = 0;
-            newObj.properties.sphere.specular_color[1] = 0;
-            newObj.properties.sphere.specular_color[2] = 0;
-
             while(word)
             {
                 // get next word
@@ -798,22 +785,6 @@ int main(int argc, char *argv[])
                         // get Green
                         recoveredNum = atof(strtok(NULL, "]"));
                         newObj.properties.plane.diffuse_color[2] = recoveredNum;
-                    }
-                    else if (strcmp(word, "specular_color") == 0)
-                    {
-                        // get left brace
-                        word = strtok(NULL, "[");
-                        // get Red
-                        recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.plane.specular_color[0] = recoveredNum;
-
-                        // get Blue
-                        recoveredNum = atof(strtok(NULL, ","));
-                        newObj.properties.plane.specular_color[1] = recoveredNum;
-
-                        // get Green
-                        recoveredNum = atof(strtok(NULL, "]"));
-                        newObj.properties.plane.specular_color[2] = recoveredNum;
                     }
                     else if (strcmp(word, "position") == 0)
                     {
