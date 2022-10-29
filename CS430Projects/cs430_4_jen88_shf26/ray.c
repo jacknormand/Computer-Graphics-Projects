@@ -38,6 +38,7 @@ typedef struct object
             float radius;
             float diffuse_color[3];
             float specular_color[3];
+            float reflectivity;
         }sphere;
 
         struct plane
@@ -46,6 +47,7 @@ typedef struct object
             float normal[3];
             float diffuse_color[3];
             float specular_color[3];
+            float reflectivity;
         }plane;
 
         struct light
@@ -672,6 +674,7 @@ int main(int argc, char *argv[])
             newObj.properties.sphere.specular_color[2] = 0;
 
             newObj.properties.sphere.radius = 0;
+            newObj.properties.sphere.reflectivity = 0;
 
 
             while(word)
@@ -745,6 +748,12 @@ int main(int argc, char *argv[])
                         recoveredNum = atof(strtok(NULL, ","));
                         newObj.properties.sphere.radius = recoveredNum;
                     }
+                    else if (strcmp(word, "reflectivity") == 0)
+                    {
+                        // get radius
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.sphere.reflectivity = recoveredNum;
+                    }
                 }
 
             }
@@ -774,6 +783,8 @@ int main(int argc, char *argv[])
             newObj.properties.sphere.specular_color[0] = 0;
             newObj.properties.sphere.specular_color[1] = 0;
             newObj.properties.sphere.specular_color[2] = 0;
+
+            newObj.properties.plane.reflectivity = 0;
 
             while(word)
             {
@@ -848,6 +859,12 @@ int main(int argc, char *argv[])
                         // get Z
                         recoveredNum = atof(strtok(NULL, "]"));
                         newObj.properties.plane.normal[2] = recoveredNum;
+                    }
+                    else if (strcmp(word, "reflectivity") == 0)
+                    {
+                        // get radius
+                        recoveredNum = atof(strtok(NULL, ","));
+                        newObj.properties.plane.reflectivity = recoveredNum;
                     }
                 }
 
