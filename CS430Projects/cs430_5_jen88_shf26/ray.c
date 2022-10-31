@@ -497,7 +497,7 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 void getColor(float* dest, ray inputRay, object sceneObjects[], int depth)
 {
     // if max depth, quit out
-    if (depth == 32)
+    if (depth == 2)
     {
         dest[0] = 0;
         dest[1] = 0;
@@ -550,6 +550,10 @@ void getColor(float* dest, ray inputRay, object sceneObjects[], int depth)
         // with nearest tval and obj index, calculate light for every single light in array and add to final color
         for (lightIndex = 0; lightIndex < 128; lightIndex++)
         {
+            if(depth>2)
+            {
+                printf("%d\n", lightIndex);
+            }
             // get light
             if (sceneObjects[lightIndex].kind == LIGHT)
             {
@@ -1170,6 +1174,7 @@ int main(int argc, char *argv[])
     // through the center of the pixel out into the scene, 
     // looking for intersections between each ray and the scene geometry.
     // For loop vertical
+    int totalIndex = 0;
     for ( heightIndex = sceneHeight-1; heightIndex >= 0; heightIndex--)
     {
         // For loop horizontal
@@ -1195,6 +1200,8 @@ int main(int argc, char *argv[])
             getColor(pixelColor, currentRay, sceneObjects, 0); 
             
             fprintf(outputFile, "%f %f %f ", pixelColor[0]*255.9, pixelColor[1]*255.9, pixelColor[2]*255.9);
+
+            totalIndex++;
 
             // reset (this is ugly ik)
             directionVar[0] = lowerLeft[0];
