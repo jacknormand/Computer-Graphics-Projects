@@ -1,0 +1,10 @@
+# image format
+P3
+# columns then rows
+4 4
+# max color value
+15
+ 0  0  0  0  0  0    0  0  0   15  0 15
+ 0  0  0  0 15  7    0  0  0    0  0  0
+ 0  0  0  0  0  0    0 15  7    0  0  0
+15  0 15  0  0  0    0  0  0    0  0  0
