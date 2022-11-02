@@ -1,0 +1,5 @@
+camera, width: 0.5, height: 0.5
+sphere, color: [1.0, 0, 0], position: [0, .25, -5], radius: .5
+sphere, color: [0, 1, 1], position: [.5, -.2, -5], radius: .5
+sphere, color: [.4, .2, 0], position: [0, -.35, -5], radius: .5
+plane, color: [0, 1, 0], position: [0, -1, 0], normal: [0, 1, 0]
