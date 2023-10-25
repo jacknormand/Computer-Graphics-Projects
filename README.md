@@ -21,7 +21,7 @@ Most recent version with lighting and reflection
 ![Screenshot 2023-10-25 at 1 26 21 PM](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/49656e8d-bc15-4dea-9d17-8552ea646848)
 
 50x50 pixel resolution because I thought it looked funny
-![Screenshot 2023-10-25 at 1 29 53 PM](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/84bd9efc-85fc-4918-998e-be3c9d3f0a17)
+<img width="517" alt="Screenshot 2023-10-25 at 3 50 00 PM" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6b16302f-957a-4675-a6f2-bf589c0584cf">
 
 
 Older version with no reflections
