@@ -3,6 +3,7 @@ Jack Normand
 jack.normand15@gmail.com
 
 # Usage
+Takes input file containing spot lights, point lights, planes, or spheres and outputs a .ppm file to be viewed. Casts rays and calculates phong lighting, supports recursive reflections. Paints one pixel at a time and resolution can be as big (or as small) as you like.<br>
 run `make` in file first <br>
 then run `./raycast width height demo.scene output.ppm` and replace width and height with numerical values, and input can be demo or other file in same format
 
