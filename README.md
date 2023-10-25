@@ -10,10 +10,10 @@ then run `./raycast width height demo.scene output.ppm` and replace width and he
 NOTE: Supports point lights AND spot lights. Spot light values must be angles
 
 # Known Issues
-None!
+None! Please not output is a PPM file, and you might need GIMP or another program to view it. (MacOS Preview works well for me)
 
 
-SAMPLE PHOTO GALLERY:
+# SAMPLE PHOTO GALLERY:
 
 Most recent version with lighting and reflection<br>
 ![v3 w reflection](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6fd75240-cfd5-4889-9473-539e2ab8a3d3)
