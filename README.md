@@ -17,6 +17,8 @@ SAMPLE PHOTO GALLERY:
 Most recent version with lighting and reflection
 ![v3 w reflection](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6fd75240-cfd5-4889-9473-539e2ab8a3d3)
 
+![Screenshot 2023-10-25 at 1 26 21 PM](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/49656e8d-bc15-4dea-9d17-8552ea646848)
+
 Older version with no reflections
 ![v2 sample2](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/5765030f-cda9-48e9-b377-22bb110d3f4f)
 
