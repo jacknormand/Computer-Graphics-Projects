@@ -20,25 +20,25 @@ None! Please not output is a PPM file, and you might need GIMP or another progra
 Most recent version with lighting and reflection<br>
 ![v3 w reflection](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/cc45c4fb-487b-4764-8f0e-691788041d0b)
 
+![highres](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/84ae4525-51cd-460c-9d1a-a1837ccc5a00)
 
-![Screenshot 2023-10-25 at 1 26 21 PM](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/49656e8d-bc15-4dea-9d17-8552ea646848)
+
 
 3D Glasses version<br>
-<img width="501" alt="Screenshot 2023-10-25 at 3 53 38 PM" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/68486e83-41e5-43c1-aebb-843c1201bb04">
+<img width="501" alt="3d" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/8e6d9124-5f92-4418-af2f-c408f559ef44">
 
 50x50 pixel resolution because I thought it looked funny<br>
-<img width="517" alt="Screenshot 2023-10-25 at 3 50 00 PM" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6b16302f-957a-4675-a6f2-bf589c0584cf">
+<img width="517" alt="lowres" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/4ccae5f6-a36f-4b20-9218-bbb40cf14381">
 
 
 Older version with no reflections<br>
-![v2 sample2](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/5765030f-cda9-48e9-b377-22bb110d3f4f)
+![v2 w lighting](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/d3f5d9cc-c29d-44ce-996c-90ba76a5eece)
 
+![v2 sample2](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/552b893d-1b28-4da3-ac65-4d82d4f60570)
 
-![v2 w lighting](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/465ba46a-972c-46a9-b64d-d279436b4da7)
 
 And version 1 picture included here just so you can see the progress<br>
-![v1](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/4df609d3-3f0e-4bff-8b83-47ee0cbac516)
-
+![v1](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/e8a52163-35fe-4852-81be-74fb9611bf9d)
 
 
 
