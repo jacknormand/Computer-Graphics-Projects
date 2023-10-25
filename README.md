@@ -15,22 +15,22 @@ None!
 
 SAMPLE PHOTO GALLERY:
 
-Most recent version with lighting and reflection
+Most recent version with lighting and reflection<br>
 ![v3 w reflection](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6fd75240-cfd5-4889-9473-539e2ab8a3d3)
 
 ![Screenshot 2023-10-25 at 1 26 21 PM](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/49656e8d-bc15-4dea-9d17-8552ea646848)
 
-50x50 pixel resolution because I thought it looked funny
+50x50 pixel resolution because I thought it looked funny<br>
 <img width="517" alt="Screenshot 2023-10-25 at 3 50 00 PM" src="https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/6b16302f-957a-4675-a6f2-bf589c0584cf">
 
 
-Older version with no reflections
+Older version with no reflections<br>
 ![v2 sample2](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/5765030f-cda9-48e9-b377-22bb110d3f4f)
 
 
 ![v2 w lighting](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/465ba46a-972c-46a9-b64d-d279436b4da7)
 
-And version 1 picture included here just so you can see the progress
+And version 1 picture included here just so you can see the progress<br>
 ![v1](https://github.com/jacknormand/Computer-Graphics-Projects/assets/21299000/4df609d3-3f0e-4bff-8b83-47ee0cbac516)
 
 
