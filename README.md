@@ -1,3 +1,5 @@
+A raytracer created in C from scratch
+
 # Authors
 Jack Normand 
 jack.normand15@gmail.com
