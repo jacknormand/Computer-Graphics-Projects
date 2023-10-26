@@ -12,7 +12,7 @@ then run `./raycast width height demo.scene output.ppm` and replace width and he
 ALSO: Bonus 3D glasses effect program is included within the named file. It works the same, but casts two images and seperates the red and blue values. Theoretically should appear 3D if you wear old school 3D glasses but I haven't tried it.
 
 # Known Issues
-None! Please not output is a PPM file, and you might need GIMP or another program to view it. (MacOS Preview works well for me)
+None! Please note output is a PPM file, and you might need GIMP or another program to view it. (MacOS Preview works well for me)
 
 
 # SAMPLE PHOTO GALLERY:
