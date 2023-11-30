@@ -69,7 +69,7 @@ typedef struct object
 }object;
 
 
-int main();
+int main(int argc, char *argv[]);
 void getColor(float* dest, ray inputRay, object sceneObjects[], int depth);
 float intersectObj(object* objectShotAt, ray inputRay);
 void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLight, float tVal, object sceneObjects[]);
@@ -198,21 +198,6 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         ray newRay;
         newRay.origin = hitpoint;
         newRay.direction = lightDir;
-        
-        // loop through objects, check if theres an intersection with a sphere for a shadow
-        for (objShadowInd = 0; objShadowInd < 128; objShadowInd++)
-        {
-            result = intersectObj(&sceneObjects[objShadowInd], newRay);
-
-            if (result >= 0 && sceneObjects[objShadowInd].kind == SPHERE)
-            {
-                // if in shadow, return black
-                dst[0] = 0;
-                dst[1] = 0;
-                dst[2] = 0;
-                return;
-            }
-        }
 
         // get that diffuse coefficient
         float dotty = v3_dot_product(normalOne, lightDirNormal);
@@ -327,6 +312,22 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         // add spec and diffuse to get final pixel color
         v3_add(ambient, ambient, specDiffuse);
 
+
+        // loop through objects, check if theres an intersection with a sphere for a shadow
+        for (objShadowInd = 0; objShadowInd < 128; objShadowInd++)
+        {
+            result = intersectObj(&sceneObjects[objShadowInd], newRay);
+
+            if (result >= 0 && sceneObjects[objShadowInd].kind == SPHERE)
+            {
+                // if in shadow, return black
+                dst[0] = ambient[0] * (attenuation);
+                dst[1] = ambient[1] * (attenuation);
+                dst[2] = ambient[2] * (attenuation);
+                return;
+            }
+        }
+
         dst[0] = ambient[0];
         dst[1] = ambient[1];
         dst[2] = ambient[2];
@@ -359,22 +360,6 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
         newRay.origin = hitpoint;
         newRay.direction = lightDir;
         
-        // loop through objects, check if theres an intersection with a sphere for a shadow
-        for (objShadowInd = 0; objShadowInd < 128; objShadowInd++)
-        {
-            result = intersectObj(&sceneObjects[objShadowInd], newRay);
-
-            if (result >= 0 && sceneObjects[objShadowInd].kind == SPHERE)
-            {
-                // if in shadow, return black
-                dst[0] = 0;
-                dst[1] = 0;
-                dst[2] = 0;
-                return;
-            }
-        }
-
-
         // get that diffuse coefficient
         float dotty = v3_dot_product(currentObj->properties.plane.normal, lightDirNormal);
         
@@ -480,6 +465,24 @@ void getLitColor(float *dst, ray inputRay, object* currentObj, object* currentLi
 
         // add spec and diffuse to get final pixel color
         v3_add(ambient, ambient, specDiffuse);
+
+        // loop through objects, check if theres an intersection with a sphere for a shadow
+        for (objShadowInd = 0; objShadowInd < 128; objShadowInd++)
+        {
+            result = intersectObj(&sceneObjects[objShadowInd], newRay);
+
+            if (result >= 0 && sceneObjects[objShadowInd].kind == SPHERE)
+            {
+                // if in shadow, return black
+                // dst[0] = 0 + attenuation;
+                // dst[1] = 0 + attenuation;
+                // dst[2] = 0 + attenuation;
+                dst[0] = ambient[0] * (attenuation);
+                dst[1] = ambient[1] * (attenuation);
+                dst[2] = ambient[2] * (attenuation);
+                return;
+            }
+        }
         
         dst[0] = ambient[0];
         dst[1] = ambient[1];
@@ -1165,7 +1168,6 @@ int main(int argc, char *argv[])
     // through the center of the pixel out into the scene, 
     // looking for intersections between each ray and the scene geometry.
     // For loop vertical
-    int totalIndex = 0;
     for ( heightIndex = sceneHeight-1; heightIndex >= 0; heightIndex--)
     {
         // For loop horizontal
@@ -1195,8 +1197,6 @@ int main(int argc, char *argv[])
             int blue = pixelColor[2]*255;
             
             fprintf(outputFile, "%d %d %d ", red, green, blue);
-
-            totalIndex++;
 
             // reset (this is ugly ik)
             directionVar[0] = lowerLeft[0];
